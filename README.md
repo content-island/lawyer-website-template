@@ -15,11 +15,9 @@ El **idioma inicial** (el primero de la lista de idiomas en Content Island) va e
 Si se quita un idioma o se cambia el orden en Content Island, las rutas se ajustan solas en la siguiente build.
 
 ## Contenido: Content Island
-Todo el contenido (textos ES/EN, imágenes, iconos SVG, colores y fuentes del tema) viene de **Content Island**,
-proyecto «LAWYER PERSONAL SITE V1». La web usa el token de solo lectura de `.env` (`CONTENT_ISLAND_ACCESS_TOKEN`, ver `.env.example`).
+Todo el contenido (textos ES/EN, imágenes, iconos SVG, logo, favicon, colores y fuentes del tema) viene del proyecto de **Content Island**
+creado a partir de esta plantilla. La web usa el token de solo lectura de `.env` (`CONTENT_ISLAND_ACCESS_TOKEN`, ver `.env.example`).
 Opcional: `SITE_URL` con el dominio de la web, para que se generen las etiquetas `hreflang` de los idiomas.
-
-- Modelo: [`../1-modelo-content-island.md`](../1-modelo-content-island.md) · Datos ES/EN: [`../2-datos-content-island.md`](../2-datos-content-island.md)
 
 ## Tematizado: variables CSS
 - `src/styles/global.css` define en `:root` las variables del tema: los 4 colores de `Theme` (`--color-primary`, `--color-secondary`, `--color-background`, `--color-tertiary`), los colores que se calculan a partir de ellos y `--font-name-*`.
@@ -32,7 +30,7 @@ Opcional: `SITE_URL` con el dominio de la web, para que se generen las etiquetas
 - CSS propio solo para los `@keyframes` y el sistema de aparición al hacer scroll (`data-reveal`: izquierda, `right`, `up`, `zoom`, `fade`).
 
 ## Diseño
-Figma: https://www.figma.com/design/Uv5Or6fHpBxc0m0x6PZRhU/Plantilla-Abogado
+Figma (acceso privado): https://www.figma.com/design/Uv5Or6fHpBxc0m0x6PZRhU/Plantilla-Abogado
 
 ## Scripts
 ```bash
