@@ -1,0 +1,72 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Logo } from '@components/index';
+import { renderLines } from '@core/helpers';
+import { routes } from '@core/constants';
+import { getFooter, getGeneral, getHeader, getSettings, getUiText } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const [footer, settings, ui, general, header] = await Promise.all([getFooter(lang), getSettings(lang), getUiText(lang), getGeneral(lang), getHeader(lang)]);
+
+// URLs de Content Island con el prefijo del idioma: "/#areas" -> "/es/#areas" (o "/#areas" en el idioma inicial)
+const toHref = (url: string) => routes.fromCms(lang, url);
+const legal = [...(footer.legalLinks ?? []), footer.privacyPolicy, footer.cookies];
+const link = 'no-underline transition-colors hover:text-on-ink';
+const heading = 'text-on-ink mb-4 text-[12px] font-semibold tracking-[0.18em] uppercase';
+---
+
+<footer class="bg-footer text-footer-text pt-16 pb-7 text-[14.5px]" id="legal">
+  <div class="wrap">
+    <div
+      class="grid grid-cols-[2fr_1fr_1fr_1.3fr] gap-10 border-b border-on-ink/14 pb-11 max-xl:grid-cols-2 max-sm:grid-cols-1 max-sm:gap-8"
+    >
+      <div>
+        <Logo logo={general.logo} name={settings.lawyerName} role={settings.role} tone="light" href={routes.home(lang)} homeLabel={ui.logoHomeLabel} />
+        <p class="mt-5 max-w-[40ch] leading-[1.55]">{footer.deontology}</p>
+      </div>
+      {
+        footer.columns.map(col => (
+          <div>
+            <h4 class={heading}>{col.title}</h4>
+            <ul class="m-0 grid list-none gap-[9px] p-0">
+              {col.links.map(item => (
+                <li>
+                  <a class={link} href={toHref(item.url)}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+      <div>
+        <h4 class={heading}>{ui.footerOfficeTitle}</h4>
+        <ul class="m-0 grid list-none gap-[9px] p-0">
+          <li set:html={renderLines(settings.address)} />
+          <li><a class={link} href={settings.phoneHref}>{settings.phone}</a></li>
+          <li><a class={link} href={`mailto:${settings.email}`}>{settings.email}</a></li>
+          <li><a class={link} href={routes.fromCms(lang, header.contact.url)}>{ui.footerBookLabel}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex flex-wrap justify-between gap-5 pt-6 text-[13px]">
+      <span>{footer.copyRight} · {ui.taxIdLabel} {settings.taxId}</span>
+      <ul class="m-0 flex list-none flex-wrap gap-[22px] p-0">
+        {
+          legal.map(item => (
+            <li>
+              <a class={link} href={toHref(item.url)}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

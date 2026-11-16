@@ -1,0 +1,184 @@
+---
+/**
+ * Hero con 3 estilos elegibles desde el contenido (Hero.heroVariant). Figma: página Diseño, "Hero 2 · Marco y trama" y "Hero 3 · Geométrico".
+ *   classic   (por defecto) · retrato + fondo geométrico desenfocado con el cuadrado girando
+ *   framed     (Hero 2)     · franja de color al fondo + marco de línea desplazado y trama diagonal que se desliza muy despacio
+ *   geometric  (Hero 3)     · retrato dentro de una retícula 3×3 con piezas del patrón (aparecen una a una)
+ * En móvil (≤900px) los tres usan la foto de fondo con degradado (Figma: Mobile > Hero).
+ */
+import type { LanguageCode } from '@content-island/api-client';
+import { GeoTile } from '@components/index';
+import type { GeoMotif } from '@components/GeoTile.astro';
+import { renderEmphasis } from '@core/helpers';
+import { getLawyerPage, getSettings } from '@layouts/api';
+import { sectionAnchor } from '@core/constants';
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const [{ hero }, settings] = await Promise.all([getLawyerPage(lang), getSettings(lang)]);
+const variant = hero.heroVariant ?? 'classic';
+const isClassic = variant === 'classic';
+const isGeometric = variant === 'geometric';
+const isFramed = variant === 'framed';
+
+// Retícula 3×3 del estilo geométrico: el retrato ocupa 2×2 y el resto son piezas
+const mosaicTiles: GeoMotif[] = ['peine', 'molinete', 'estrella', 'cuarto-redondeado', 'media-luna'];
+const stripTiles: GeoMotif[] = ['estrella', 'cuarto-redondeado', 'peine', 'molinete', 'media-luna'];
+
+const shape = 'absolute block';
+---
+
+<section
+  id={sectionAnchor(lang, 'hero')}
+  data-hero-variant={variant}
+  class:list={[
+    'max-tab:bg-ink max-tab:text-on-ink relative overflow-hidden pt-[clamp(48px,7vw,96px)] pb-[clamp(48px,6vw,88px)] max-tab:flex max-tab:min-h-[875px] max-tab:items-end max-tab:p-0',
+    'max-tab:after:pointer-events-none max-tab:after:absolute max-tab:after:inset-0 max-tab:after:z-1 max-tab:after:bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--color-ink)_5%,transparent)_0%,color-mix(in_oklab,var(--color-ink)_5%,transparent)_32%,color-mix(in_oklab,var(--color-ink)_82%,transparent)_56%,var(--color-ink)_74%)]',
+    isGeometric && 'max-tab:min-h-[954px] max-tab:pb-[79px]',
+  ]}
+>
+  {/* ── Fondos de escritorio ── */}
+  {
+    isClassic && (
+      <div class="pointer-events-none absolute inset-0 max-tab:hidden" aria-hidden="true">
+        <span class={`${shape} bg-accent animate-blob top-[-240px] left-[52.8%] size-[780px] rounded-full opacity-16 blur-[75px]`} />
+        {/* El cuadrado gira hacia la derecha de forma continua y muy lenta */}
+        <span class={`${shape} bg-accent animate-square-spin top-[460px] left-[73.6%] size-[420px] rounded-[48px] opacity-12 blur-[45px]`} />
+        <span class={`${shape} bg-accent animate-blob top-[560px] left-[-200px] size-[540px] rounded-full opacity-7 blur-[65px] [animation-delay:-7s]`} />
+        <span class={`${shape} border-accent top-[10px] left-[64.6%] size-[600px] rounded-full border-[1.5px] opacity-22`} />
+        <span class={`${shape} border-accent top-[700px] left-[38.9%] size-[140px] rounded-full border-[1.5px] opacity-25`} />
+        <span class={`${shape} border-accent animate-square-spin-slow top-[110px] left-[48.6%] size-24 border-[1.5px] opacity-22`} />
+        <span class={`${shape} bg-accent top-[640px] left-[90.3%] size-3.5 rounded-full opacity-45`} />
+        <span class={`${shape} inset-0 bg-[linear-gradient(90deg,var(--color-page)_0%,color-mix(in_oklab,var(--color-page)_90%,transparent)_38%,transparent_62%)]`} />
+        <span class={`${shape} to-page inset-x-0 bottom-0 h-[220px] bg-linear-to-b from-transparent`} />
+      </div>
+    )
+  }
+  {isFramed && <div class="bg-subtle pointer-events-none absolute inset-y-0 right-0 left-[69.4%] max-tab:hidden" aria-hidden="true" />}
+
+  <div
+    class="wrap grid-12 relative z-1 items-end max-tab:static max-tab:z-auto max-tab:w-full"
+  >
+    <div
+      class:list={[
+        'col-[1/8] pb-[clamp(40px,6vw,88px)] max-tab:relative max-tab:z-2 max-tab:col-span-full max-tab:pb-10',
+      ]}
+      data-reveal-group="110"
+    >
+      <p class="eyebrow max-tab:text-accent-light max-tab:text-[12px]" data-reveal>{hero.eyebrow}</p>
+      <h1
+        class="font-display mt-[22px] mb-[26px] text-[clamp(42px,5.6vw,74px)] leading-[1.04] tracking-[-0.015em] max-tab:mt-3.5 max-tab:mb-4 max-tab:text-[42px] max-tab:leading-[1.06]"
+        data-reveal
+        set:html={renderEmphasis(hero.title, 'not-italic text-accent max-tab:text-accent-light')}
+      />
+      {/* 54ch: la primera línea termina en «cómo» y el párrafo no se acerca tanto al retrato */}
+      <p class="lead tab:max-w-[54ch] max-tab:text-on-ink/85 max-tab:font-body mb-[34px] max-tab:mb-6 max-tab:text-[16px] max-tab:leading-[1.6]" data-reveal>
+        {hero.subtitle}
+      </p>
+      <div class="flex flex-wrap gap-3.5 max-tab:flex-col max-tab:gap-3" data-reveal>
+        <a class="btn btn--solid max-tab:w-full" href={settings.phoneHref}>{hero.primaryCta}</a>
+        <a
+          class="btn btn--line max-tab:text-on-ink max-tab:border-on-ink max-tab:hover:bg-on-ink max-tab:hover:text-ink max-tab:w-full"
+          href={settings.whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer">{hero.secondaryCta}</a
+        >
+      </div>
+    </div>
+
+    {/* ── Retrato: en móvil siempre es la foto de fondo; en escritorio depende del estilo ── */}
+    <figure
+      class:list={[
+        'col-[8/13] m-0 max-tab:absolute max-tab:inset-x-0 max-tab:top-0 max-tab:z-0 max-tab:h-[620px]',
+        isGeometric && 'tab:hidden',
+      ]}
+      data-reveal="zoom"
+      style="--reveal-delay:200ms"
+    >
+      <div class="relative max-tab:h-full">
+        <div
+          class:list={[
+            'bg-placeholder rounded-sm aspect-[4/5] overflow-hidden max-tab:aspect-auto max-tab:h-full max-tab:rounded-none',
+            isFramed && 'relative z-1',
+          ]}
+        >
+          <img
+            class="size-full object-cover"
+            src={hero.portrait.url}
+            alt={hero.portraitAlt}
+            width="1024"
+            height="1280"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        {
+          isFramed && (
+            <div class="pointer-events-none max-tab:hidden" aria-hidden="true">
+              {/* Trama diagonal fina (como papel timbrado) que se desliza muy despacio, asomando por la derecha */}
+              <span class={`${shape} hatch animate-hatch-drift top-[56px] right-[-72px] h-[62%] w-[78%] opacity-35`} />
+              {/* Marco de línea desplazado arriba a la izquierda, con una esquina marcada */}
+              <span class={`${shape} border-accent top-[-28px] right-[28px] bottom-[28px] left-[-28px] border-[1.5px] opacity-45`} />
+              <span class={`${shape} bg-accent top-[-33px] left-[-33px] size-2.5`} />
+            </div>
+          )
+        }
+      </div>
+      <figcaption class="border-ink text-ink-soft mt-3.5 flex justify-between gap-3 border-t pt-3.5 text-[13px] max-tab:hidden">
+        <span>{settings.lawyerFullName}</span><span>{hero.portraitCaption}</span>
+      </figcaption>
+    </figure>
+
+    {
+      isGeometric && (
+        // Mismas columnas que el clásico; el mosaico es más bajo que el retrato, así que va centrado en vertical respecto al texto
+        <figure class="col-[8/13] m-0 self-center pb-[clamp(40px,6vw,88px)] max-tab:hidden">
+          <div class="grid grid-cols-3 gap-1.5" data-reveal-group="90">
+            <div class="bg-placeholder col-span-2 row-span-2 overflow-hidden" data-reveal="zoom">
+              <img
+                class="aspect-square size-full object-cover"
+                src={hero.portrait.url}
+                alt={hero.portraitAlt}
+                width="1024"
+                height="1280"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+            {mosaicTiles.map(motif => (
+              <div class="aspect-square" data-reveal="zoom">
+                <GeoTile motif={motif} class="size-full" />
+              </div>
+            ))}
+          </div>
+          <figcaption class="border-ink text-ink-soft mt-3.5 flex justify-between gap-3 border-t pt-3.5 text-[13px]">
+            <span>{settings.lawyerFullName}</span>
+            <span>{hero.portraitCaption}</span>
+          </figcaption>
+        </figure>
+      )
+    }
+  </div>
+
+  {/* ── Detalles solo móvil ── */}
+  {
+    isGeometric && (
+      <div class="absolute inset-x-0 bottom-0 z-2 grid h-[79px] grid-cols-5 tab:hidden" aria-hidden="true">
+        {stripTiles.map(motif => (
+          <GeoTile motif={motif} class="size-full" />
+        ))}
+      </div>
+    )
+  }
+  {
+    isFramed && (
+      <div class="pointer-events-none absolute top-9 right-6 z-2 size-[96px] tab:hidden" aria-hidden="true">
+        <span class={`${shape} hatch-on-ink animate-hatch-drift inset-0 opacity-50`} />
+        <span class={`${shape} border-on-ink/60 top-[-10px] right-[10px] bottom-[10px] left-[-10px] border-[1.5px]`} />
+      </div>
+    )
+  }
+</section>

@@ -1,0 +1,134 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Logo } from '@components/index';
+import type { LanguageAlternate } from '@core/helpers';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { routes } from '@core/constants';
+import { getGeneral, getHeader, getSettings, getUiText, hasArticles } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+  /** Esta página en cada idioma (selector de idioma) */
+  alternates?: LanguageAlternate[];
+}
+
+const { lang, alternates = [] } = Astro.props;
+const [header, settings, showArticles, ui, general] = await Promise.all([
+  getHeader(lang),
+  getSettings(lang),
+  hasArticles(lang),
+  getUiText(lang),
+  getGeneral(lang),
+]);
+
+// En la home los enlaces son anclas (#areas); en el resto de páginas vuelven a la home (/es/#areas)
+const onHome = Astro.url.pathname === routes.home(lang);
+const sectionId = (url: string) => url.replace(/^\/?#?/, '');
+const toSection = (url: string) => (onHome ? `#${sectionId(url)}` : routes.homeSection(lang, sectionId(url)));
+
+const navLinks = [
+  { label: header.areas.label, href: toSection(header.areas.url) },
+  { label: header.about.label, href: toSection(header.about.url) },
+  // "Artículos" solo aparece si hay artículos publicados, y lleva al listado completo
+  ...(showArticles ? [{ label: header.articles.label, href: routes.articles(lang) }] : []),
+  { label: header.contact.label, href: toSection(header.contact.url) },
+];
+const ctaHref = toSection(header.contact.url);
+---
+
+<!-- Barra superior -->
+<div class="bg-ink text-on-ink/80 text-[13.5px] max-sm:text-[12.5px]">
+  <div class="wrap flex min-h-[42px] flex-wrap items-center justify-between gap-4">
+    <span class="tracking-[0.04em]"
+      >{ui.barNumberPrefix} {settings.barNumber} · <span class="max-sm:hidden">{settings.barAssociation}</span><span
+        class="sm:hidden">{settings.barAssociationShort}</span
+      ></span
+    >
+    <div class="flex gap-[22px] max-sm:hidden">
+      <span>{settings.scheduleShort}</span>
+      <a class="text-on-ink no-underline" href={`mailto:${settings.email}`}>{settings.email}</a>
+    </div>
+  </div>
+</div>
+
+<header
+  class="border-rule bg-page/94 sticky top-0 z-50 border-b backdrop-blur-[8px] transition-shadow duration-300 [&.is-scrolled]:shadow-[0_10px_30px_-22px_color-mix(in_oklab,var(--color-ink)_45%,transparent)]"
+  data-header
+>
+  <div class="wrap flex min-h-[84px] items-center justify-between gap-6 max-sm:min-h-[68px]">
+    <Logo logo={general.logo} name={settings.lawyerName} role={settings.role} href={routes.home(lang)} homeLabel={ui.logoHomeLabel} />
+
+    <nav
+      class="max-xl:bg-page max-xl:border-rule ease-soft max-xl:invisible max-xl:absolute max-xl:inset-x-0 max-xl:top-full max-xl:flex max-xl:-translate-y-2 max-xl:flex-col max-xl:gap-4 max-xl:border-b max-xl:px-[clamp(20px,4vw,40px)] max-xl:pt-3 max-xl:pb-6 max-xl:opacity-0 max-xl:transition-[transform,opacity,visibility] max-xl:duration-300 max-xl:[&.active]:visible max-xl:[&.active]:translate-y-0 max-xl:[&.active]:opacity-100"
+      id="nav"
+      aria-label={ui.mainNavLabel}
+      data-mobile-menu
+    >
+      <ul class="m-0 flex list-none gap-6 p-0 max-xl:flex-col max-xl:gap-1">
+        {
+          navLinks.map(link => (
+            <li>
+              <a
+                href={link.href}
+                data-menu-close
+                class="after:bg-accent after:ease-soft relative py-1.5 text-[15px] font-medium whitespace-nowrap no-underline after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:transition-transform after:duration-350 hover:after:scale-x-100 max-xl:block max-xl:py-3 max-xl:text-[17px]"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="btn btn--solid hidden self-stretch max-xl:inline-flex" href={ctaHref} data-menu-close>{header.ctaLabel}</a>
+    </nav>
+
+    <div class="flex items-center gap-5 max-sm:gap-2.5">
+      <LanguageSwitcher alternates={alternates} label={ui.languageLabel} />
+      <a class="font-title text-[17px] whitespace-nowrap no-underline max-xl:hidden" href={settings.phoneHref}>{settings.phone}</a>
+      <a class="btn btn--solid max-sm:hidden" href={ctaHref}>{header.ctaLabel}</a>
+      <button
+        class="border-ink text-ink font-body hidden cursor-pointer rounded-md border bg-transparent px-3.5 py-2.5 text-[14px] font-semibold max-xl:inline-block"
+        type="button"
+        aria-controls="nav"
+        aria-expanded="false"
+        data-menu-toggle
+      >
+        {header.menuLabel}
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  const header = document.querySelector<HTMLElement>('[data-header]');
+
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    menu?.classList.toggle('active', open);
+    document.body.classList.toggle('menu-open', open);
+  };
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  document.querySelectorAll('[data-menu-close]').forEach(link => link.addEventListener('click', () => setOpen(false)));
+
+  // Sombra suave en la cabecera al hacer scroll
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Scroll suave con compensación de la cabecera fija
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', event => {
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      event.preventDefault();
+      const offset = header?.offsetHeight ?? 0;
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+      history.pushState(null, '', href);
+    });
+  });
+</script>

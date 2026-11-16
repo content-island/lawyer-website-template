@@ -1,0 +1,19 @@
+---
+/** Cabecera de sección en retícula de 12 columnas (Figma: Section Header). */
+import { renderEmphasis } from '@core/helpers';
+import type { SectionHead } from '@models/index';
+
+interface Props {
+  head: Pick<SectionHead, 'eyebrow' | 'title' | 'lead'>;
+}
+const { head } = Astro.props;
+---
+
+<!-- Antetítulo en col. 1-3, título y entradilla en col. 4-10; en ≤900px todo a ancho completo -->
+<div class="grid-12 mb-[clamp(40px,5vw,64px)]">
+  <p class="eyebrow col-[1/4] pt-3 max-tab:col-span-full max-tab:pt-0" data-reveal>{head.eyebrow}</p>
+  <div class="col-[4/11] flex flex-col gap-[18px] max-tab:col-span-full">
+    <h2 class="h2" data-reveal="up" style="--reveal-delay:80ms" set:html={renderEmphasis(head.title)} />
+    {head.lead && <p class="lead" data-reveal="up" style="--reveal-delay:160ms">{head.lead}</p>}
+  </div>
+</div>

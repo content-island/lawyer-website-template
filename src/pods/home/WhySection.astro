@@ -1,0 +1,35 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Icon, SectionHead } from '@components/index';
+import { getLawyerPage } from '@layouts/api';
+import { sectionAnchor } from '@core/constants';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const sectionId = sectionAnchor(lang, 'why');
+const { whyHead: head, whyItems: items } = await getLawyerPage(lang);
+---
+
+<section class="section bg-subtle" id={sectionId}>
+  <div class="wrap">
+    <SectionHead head={head} />
+    <ul
+      class="border-ink m-0 grid list-none grid-cols-5 gap-6 border-t p-0 pt-10 max-xl:grid-cols-3 max-xl:gap-y-10 max-sm:grid-cols-1 max-sm:gap-y-8 max-sm:pt-8"
+      data-reveal-group="110"
+    >
+      {
+        items.map(item => (
+          <li class="group flex flex-col gap-4" data-reveal="up">
+            <span class="bg-surface border-rule text-accent ease-soft group-hover:bg-accent group-hover:border-accent group-hover:text-on-ink grid size-14 place-items-center rounded-full border transition-[background-color,color,border-color,transform] duration-500 group-hover:-rotate-8">
+              <Icon icon={item.icon} />
+            </span>
+            <h3 class="font-body text-[12.5px] font-semibold tracking-[0.16em] uppercase">{item.title}</h3>
+            <p class="text-ink-soft text-[15px]">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

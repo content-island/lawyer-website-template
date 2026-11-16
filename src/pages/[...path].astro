@@ -1,0 +1,122 @@
+---
+/**
+ * Todas las páginas de la web en una sola ruta, para que el idioma inicial vaya sin prefijo y sin redirecciones.
+ *   idioma inicial (el primero en Content Island):  /   /articles/   /articles/<slug>/   /<slug-legal>
+ *   resto de idiomas:                                /es/  /es/articulos/  /es/articulos/<slug>/  /es/<slug-legal>
+ * Ver src/core/constants/routes.constants.ts.
+ */
+import type { LanguageCode } from '@content-island/api-client';
+import { LANGUAGES, routes } from '@core/constants';
+import type { LanguageAlternate } from '@core/helpers';
+import Layout from '@layouts/Layout.astro';
+import { Header, Footer } from '@layouts/components';
+import { getArticle, getArticles, getArticlesExtra, getFooter, getHeader, getLawyerPage, getPageMeta, getSettings, hasArticles } from '@layouts/api';
+import {
+  HeroSection,
+  CredentialsSection,
+  AreasSection,
+  WhySection,
+  AboutSection,
+  ProcessSection,
+  CtaSection,
+  ReviewsSection,
+  FaqSection,
+  ArticlesSection,
+  ContactSection,
+} from '@pods/home';
+import { ArticlesList, ArticleDetail } from '@pods/articles';
+import { LegalPage, getLegalPage } from '@pods/legal';
+
+type Page =
+  | { kind: 'home'; lang: LanguageCode }
+  | { kind: 'articles'; lang: LanguageCode }
+  | { kind: 'article'; lang: LanguageCode; slug: string }
+  | { kind: 'legal'; lang: LanguageCode; type: 'Cookies' | 'PrivacyPolicy' };
+
+export const getStaticPaths = async () => {
+  /** "/es/articulos/x/" -> "es/articulos/x" · "/" -> undefined (raíz). Va aquí dentro porque getStaticPaths no ve el resto del frontmatter */
+  const toParam = (url: string) => url.replace(/^\/+|\/+$/g, '') || undefined;
+  const perLang = await Promise.all(
+    LANGUAGES.map(async lang => {
+      const pages: { url: string; page: Page }[] = [{ url: routes.home(lang), page: { kind: 'home', lang } }];
+      // Artículos: solo si hay alguno publicado en ese idioma
+      if (await hasArticles(lang)) {
+        pages.push({ url: routes.articles(lang), page: { kind: 'articles', lang } });
+        for (const { slug } of await getArticles(lang)) pages.push({ url: routes.article(lang, slug), page: { kind: 'article', lang, slug } });
+      }
+      for (const type of ['Cookies', 'PrivacyPolicy'] as const) {
+        const { slug } = await getLegalPage(lang, type);
+        pages.push({ url: routes.page(lang, slug), page: { kind: 'legal', lang, type } });
+      }
+      return pages;
+    }),
+  );
+  return perLang.flat().map(({ url, page }) => ({ params: { path: toParam(url) }, props: page }));
+};
+
+const page = Astro.props as Page;
+const { lang } = page;
+const [footer, settings] = await Promise.all([getFooter(lang), getSettings(lang)]);
+const siteSuffix = `${settings.lawyerName} ${settings.role}`;
+const cookiesPageUrl = routes.fromCms(lang, footer.cookies.url);
+
+let title: string | undefined;
+let description: string | undefined;
+if (page.kind === 'home') {
+  ({ title, description } = (await getLawyerPage(lang)).meta);
+} else if (page.kind === 'legal') {
+  ({ title, description } = await getPageMeta(lang, page.type));
+} else if (page.kind === 'articles') {
+  const extra = await getArticlesExtra(lang);
+  title = `${extra.listEyebrow} · ${siteSuffix}`;
+  description = extra.listLead;
+} else {
+  const article = await getArticle(lang, page.slug);
+  title = `${article.title} · ${siteSuffix}`;
+  description = article.excerpt;
+}
+
+// Esta misma página en cada idioma (selector de idioma y hreflang). Si en un idioma no existe, se va a su home.
+const alternateUrl = async (other: (typeof LANGUAGES)[number]): Promise<string> => {
+  if (page.kind === 'home') return routes.home(other);
+  if (page.kind === 'legal') return routes.page(other, (await getLegalPage(other, page.type)).slug);
+  if (!(await hasArticles(other))) return routes.home(other);
+  if (page.kind === 'articles') return routes.articles(other);
+  // El mismo artículo tiene el mismo id en todos los idiomas aunque cambie el slug
+  const { id: articleId } = await getArticle(lang, page.slug);
+  const translated = (await getArticles(other)).find(a => a.id === articleId);
+  return translated ? routes.article(other, translated.slug) : routes.articles(other);
+};
+const alternates: LanguageAlternate[] = await Promise.all(
+  LANGUAGES.map(async other => ({ lang: other, url: await alternateUrl(other), current: other === lang })),
+);
+
+// Home: el contenido sale de LawyerPage (cada sección lo lee con getLawyerPage). Los IDs de sección salen de las URLs de navegación de Content Island ("/#areas" -> "areas")
+const header = page.kind === 'home' ? await getHeader(lang) : undefined;
+const id = (url: string) => url.replace(/^\/?#?/, '');
+---
+
+<Layout lang={lang} title={title} description={description} cookiesPageUrl={cookiesPageUrl} alternates={alternates}>
+  <Header lang={lang} alternates={alternates} />
+  {
+    page.kind === 'home' && header && (
+      <main>
+        <HeroSection lang={lang} />
+        <CredentialsSection lang={lang} aboutSectionId={id(header.about.url)} />
+        <AreasSection lang={lang} sectionId={id(header.areas.url)} contactSectionId={id(header.contact.url)} />
+        <WhySection lang={lang} />
+        <AboutSection lang={lang} sectionId={id(header.about.url)} />
+        <ProcessSection lang={lang} />
+        <CtaSection lang={lang} contactSectionId={id(header.contact.url)} />
+        <ReviewsSection lang={lang} />
+        <FaqSection lang={lang} />
+        <ArticlesSection lang={lang} sectionId={id(header.articles.url)} />
+        <ContactSection lang={lang} sectionId={id(header.contact.url)} privacyUrl={routes.fromCms(lang, footer.privacyPolicy.url)} />
+      </main>
+    )
+  }
+  {page.kind === 'articles' && <ArticlesList lang={lang} />}
+  {page.kind === 'article' && <ArticleDetail lang={lang} slug={page.slug} />}
+  {page.kind === 'legal' && <LegalPage lang={lang} type={page.type} />}
+  <Footer lang={lang} />
+</Layout>

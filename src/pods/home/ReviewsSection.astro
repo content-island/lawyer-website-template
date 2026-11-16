@@ -1,0 +1,73 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { SectionHead } from '@components/index';
+import { getLawyerPage, getUiText } from '@layouts/api';
+import { sectionAnchor } from '@core/constants';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const sectionId = sectionAnchor(lang, 'reviews');
+const [{ reviewsHead: head, reviews }, ui] = await Promise.all([getLawyerPage(lang), getUiText(lang)]);
+---
+
+{
+  head && reviews.length > 0 && (
+<section class="section" id={sectionId}>
+  <div class="wrap">
+    <SectionHead head={head} />
+    <div
+      class="grid snap-x snap-mandatory auto-cols-[calc((100%-80px)/3)] grid-flow-col gap-10 overflow-x-auto scroll-smooth [scrollbar-width:none] max-xl:auto-cols-[calc((100%-40px)/2)] max-sm:auto-cols-[88%] max-sm:gap-6 [&::-webkit-scrollbar]:hidden"
+      tabindex="0"
+      aria-label={ui.reviewsLabel}
+      data-reviews
+      data-reveal-group="110"
+    >
+      {
+        reviews.map(review => (
+          <figure class="border-ink m-0 flex snap-start flex-col gap-5 border-t pt-6" data-reveal="right">
+            <span class="text-accent text-[14px] tracking-[3px]" aria-label={`${review.rating} de 5`}>
+              {'★'.repeat(review.rating)}
+            </span>
+            <blockquote class="font-title before:text-accent m-0 text-[19px] leading-[1.55] before:mb-1.5 before:block before:text-[64px] before:leading-[0.6] before:content-['“']">
+              {review.quote}
+            </blockquote>
+            <figcaption class="text-ink-soft mt-auto text-[14px]">
+              <strong class="text-ink block font-semibold">{review.author}</strong>
+              {review.caseType}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <div class="mt-9 flex justify-end gap-3">
+      <button class="arrow max-sm:size-[42px] max-sm:text-[17px]" type="button" aria-label={ui.reviewsPrevLabel} data-reviews-prev>←</button>
+      <button class="arrow max-sm:size-[42px] max-sm:text-[17px]" type="button" aria-label={ui.reviewsNextLabel} data-reviews-next>→</button>
+    </div>
+  </div>
+</section>
+  )
+}
+
+<script>
+  const track = document.querySelector<HTMLElement>('[data-reviews]');
+  const prev = document.querySelector<HTMLButtonElement>('[data-reviews-prev]');
+  const next = document.querySelector<HTMLButtonElement>('[data-reviews-next]');
+  if (track && prev && next) {
+    const page = () => {
+      const card = track.querySelector<HTMLElement>('figure');
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return card ? card.offsetWidth + gap : track.clientWidth;
+    };
+    const update = () => {
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    };
+    prev.addEventListener('click', () => track.scrollBy({ left: -page() }));
+    next.addEventListener('click', () => track.scrollBy({ left: page() }));
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+</script>

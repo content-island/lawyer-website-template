@@ -1,0 +1,26 @@
+---
+/**
+ * Icono SVG subido a Content Island (campo Media). Se descarga al generar la web y se inserta en línea
+ * para que herede el color con currentColor: así cambia con el tema. Cualquier color fijo del SVG se
+ * sustituye por currentColor (fill="none" se respeta). Si no se puede leer, se usa <img>.
+ */
+import type { Media } from '@models/index';
+import { loadSvgIcon } from '@core/helpers';
+
+interface Props {
+  icon: Media;
+  size?: number;
+  class?: string;
+}
+
+const { icon, size = 24, class: className } = Astro.props;
+const svg = await loadSvgIcon(icon.url);
+---
+
+{
+  svg ? (
+    <svg class={className} width={size} height={size} viewBox={svg.viewBox} aria-hidden="true" {...svg.attributes} set:html={svg.body} />
+  ) : (
+    <img class={className} src={icon.url} width={size} height={size} alt="" aria-hidden="true" loading="lazy" />
+  )
+}

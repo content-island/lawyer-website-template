@@ -1,0 +1,55 @@
+---
+/**
+ * Pieza del patrón geométrico (Figma: Components > Geo Tile).
+ * Colores con tokens del tema (fill-page / fill-ink / fill-accent): cambian con Theme.
+ */
+export type GeoMotif =
+  | 'estrella'
+  | 'cuarto-redondeado'
+  | 'peine'
+  | 'octogonos'
+  | 'media-luna'
+  | 'molinete'
+  | 'cuadrado-linea'
+  | 'vela'
+  | 'cuarto';
+
+interface Props {
+  motif: GeoMotif;
+  class?: string;
+}
+const { motif, class: className } = Astro.props;
+
+const peine = Array.from({ length: 24 }, (_, i) => {
+  const c = 21.667 * (i + 0.5);
+  return `<polygon points="0,${c - 6} 227,${c - 6} 292,${c - 2.2} 520,${c - 2.2} 520,${c + 2.2} 292,${c + 2.2} 227,${c + 6} 0,${c + 6}"/>`;
+}).join('');
+const octogonos = Array.from({ length: 12 }, (_, i) => {
+  const x0 = i * 22;
+  const x1 = 520 - i * 22;
+  const ch = 44;
+  return `<polygon points="${x0 + ch},0 ${x1 - ch},0 ${x1},${ch} ${x1},${520 - ch} ${x1 - ch},520 ${x0 + ch},520 ${x0},${520 - ch} ${x0},${ch}"/>`;
+}).join('');
+const arm =
+  '<polygon points="260,0 412,0 412,152 260,152"/><polygon points="0,0 152,0 260,108 260,152 152,152"/><polygon points="152,152 260,152 260,260"/>';
+
+const MOTIFS: Record<GeoMotif, string> = {
+  estrella:
+    '<path class="fill-ink" d="M0 0 C115 115 190 173 260 173 C330 173 405 115 520 0 C405 115 347 190 347 260 C347 330 405 405 520 520 C405 405 330 347 260 347 C190 347 115 405 0 520 C115 405 173 330 173 260 C173 190 115 115 0 0 Z"/>',
+  'cuarto-redondeado':
+    '<rect class="fill-accent" x="329" y="0" width="191" height="191"/><path class="fill-ink" d="M0 0 H329 A191 191 0 0 1 520 191 V520 A520 520 0 0 1 0 0 Z"/><path class="fill-ink" d="M0 326 A194 194 0 0 0 194 520 H0 Z"/>',
+  peine: `<g class="fill-accent">${peine}</g>`,
+  octogonos: `<g class="stroke-ink" fill="none" stroke-width="3">${octogonos}</g>`,
+  'media-luna':
+    '<rect class="fill-ink" width="520" height="520"/><path class="fill-accent" d="M260 0 H520 V520 H260 A260 260 0 0 1 260 0 Z"/><path class="fill-page" d="M520 0 A216 216 0 0 0 367.3 366.7 L520 520 Z"/>',
+  molinete: `<g class="fill-ink">${[0, 90, 180, 270].map(r => `<g transform="rotate(${r} 260 260)">${arm}</g>`).join('')}</g>`,
+  'cuadrado-linea': '<rect class="fill-accent" width="520" height="520"/><line class="stroke-page" stroke-width="4" x1="21" y1="259" x2="499" y2="259"/>',
+  vela: '<path class="fill-accent" d="M194 0 H520 V327 A327 327 0 0 0 194 0 Z"/><path class="fill-ink" d="M129 62 L0 520 H394 A298 298 0 0 1 129 62 Z"/>',
+  cuarto: '<path class="fill-ink" d="M0 0 A520 520 0 0 1 520 520 H0 Z"/>',
+};
+---
+
+<svg class:list={['block', className]} viewBox="0 0 520 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect class="fill-page" width="520" height="520"></rect>
+  <Fragment set:html={MOTIFS[motif]} />
+</svg>

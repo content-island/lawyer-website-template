@@ -1,0 +1,65 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Icon, SectionHead } from '@components/index';
+import { getLawyerPage } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+  sectionId: string;
+  contactSectionId: string;
+}
+const { lang, sectionId, contactSectionId } = Astro.props;
+const { areasHead: head, practiceAreas: areas } = await getLawyerPage(lang);
+---
+
+<section class="section" id={sectionId}>
+  <div class="wrap">
+    <SectionHead head={head} />
+    <div class="grid grid-cols-3 gap-7 max-xl:grid-cols-2 max-sm:grid-cols-1 max-sm:gap-5" data-reveal-group="90">
+      {
+        areas.map(area => (
+          <div class="flex" data-reveal="up">
+            <article
+              class:list={[
+                'group bg-surface ease-soft flex w-full flex-col overflow-hidden rounded-md border transition-[border-color,transform,box-shadow] duration-400 hover:border-ink hover:-translate-y-1 hover:shadow-[0_18px_40px_-28px_color-mix(in_oklab,var(--color-ink)_45%,transparent)]',
+                area.isMain ? 'border-accent' : 'border-rule',
+              ]}
+            >
+              <div class="bg-subtle relative aspect-[3/2] overflow-hidden">
+                <img
+                  class="ease-soft size-full object-cover transition-transform duration-800 group-hover:scale-[1.04]"
+                  src={area.image.url}
+                  alt={area.imageAlt}
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+                {/* Especialidad principal: bloque del icono invertido (Figma: Area Card / Type=Main) */}
+                <span
+                  class:list={[
+                    'absolute top-0 left-0 grid place-items-center rounded-br-md p-3.5',
+                    area.isMain ? 'bg-accent text-on-ink' : 'bg-page text-accent',
+                  ]}
+                >
+                  <Icon icon={area.icon} />
+                </span>
+                {area.isMain && area.tag && (
+                  <span class="bg-accent text-on-ink absolute top-3 right-3 rounded-sm px-2.5 py-1.5 text-[11.5px] font-semibold tracking-[0.06em] uppercase">
+                    {area.tag}
+                  </span>
+                )}
+              </div>
+              <div class="flex flex-1 flex-col gap-3 p-6">
+                <h3 class:list={['font-title text-[24px] leading-[1.2]', area.isMain && 'text-accent']}>{area.title}</h3>
+                <p class="text-ink-soft flex-1 text-[15.5px]">{area.description}</p>
+                <a class="btn btn--line btn--sm mt-1.5 self-start" href={`#${contactSectionId}`}>
+                  {area.ctaLabel}
+                </a>
+              </div>
+            </article>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

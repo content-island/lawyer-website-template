@@ -1,0 +1,56 @@
+---
+/** Banner "¿Necesitas asesoramiento legal?" con foto de fondo (Figma: CTA Asesoramiento). */
+import type { LanguageCode } from '@content-island/api-client';
+import { getLawyerPage } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+  contactSectionId: string;
+}
+const { lang, contactSectionId } = Astro.props;
+const { cta } = await getLawyerPage(lang);
+---
+
+<!-- Al entrar en pantalla (.is-in): la foto se asienta con un zoom lento y la línea azul se dibuja -->
+<section class="group relative flex min-h-[720px] items-center overflow-hidden max-sm:min-h-[640px]" aria-labelledby="cta-title" data-cta>
+  <img
+    class="ease-soft absolute inset-0 size-full scale-[1.08] object-cover transition-transform duration-[2400ms] group-[.is-in]:scale-100 max-sm:object-[78%_50%] motion-reduce:scale-100"
+    src={cta.image.url}
+    alt={cta.imageAlt}
+    width="1536"
+    height="864"
+    loading="lazy"
+    decoding="async"
+  />
+  <div class="wrap relative w-full">
+    <div class="bg-page/74 max-w-[620px] p-14 backdrop-blur-[6px] max-sm:px-6 max-sm:py-8" data-reveal>
+      <h2 id="cta-title" class="font-body text-[clamp(26px,2.9vw,42px)] leading-[1.18] font-normal tracking-[0.06em] uppercase">{cta.title}</h2>
+      <span
+        class="bg-accent ease-soft mt-9 mb-8 block h-[1.5px] w-[150px] origin-left scale-x-0 transition-transform delay-500 duration-1000 group-[.is-in]:scale-x-100 max-sm:my-6 max-sm:w-[110px] motion-reduce:scale-x-100"
+        aria-hidden="true"></span>
+      <p class="max-w-[46ch] text-[17px] max-sm:text-[16px]">{cta.text}</p>
+      <a
+        class="border-ink hover:bg-ink hover:text-on-ink font-body mt-8 inline-flex items-center justify-center border px-10 py-[18px] text-[15px] leading-none font-semibold tracking-[0.1em] uppercase no-underline transition-colors duration-300 max-sm:mt-6 max-sm:w-full"
+        href={`#${contactSectionId}`}>{cta.ctaLabel}</a
+      >
+    </div>
+  </div>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>('[data-cta]');
+  if (section && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          section.classList.add('is-in');
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(section);
+  } else {
+    section?.classList.add('is-in');
+  }
+</script>

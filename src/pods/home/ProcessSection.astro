@@ -1,0 +1,33 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { SectionHead } from '@components/index';
+import { getLawyerPage } from '@layouts/api';
+import { sectionAnchor } from '@core/constants';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const sectionId = sectionAnchor(lang, 'process');
+const { processHead: head, processSteps: steps } = await getLawyerPage(lang);
+---
+
+<section class="section" id={sectionId}>
+  <div class="wrap">
+    <SectionHead head={head} />
+    <ol class="border-ink m-0 grid list-none grid-cols-3 border-t p-0 max-md:grid-cols-1" data-reveal-group="140">
+      {
+        steps.map((step, i) => (
+          <li
+            class="border-rule mr-7 border-r pt-7 pr-7 pb-2 last:mr-0 last:border-r-0 max-md:mr-0 max-md:border-r-0 max-md:border-b max-md:pr-0 max-md:pb-6 max-md:last:border-b-0"
+            data-reveal
+          >
+            <span class="font-title text-accent block text-[56px] leading-none">{i + 1}</span>
+            <h3 class="font-title mt-[18px] mb-2.5 text-[24px] leading-[1.25]">{step.title}</h3>
+            <p class="text-ink-soft max-w-[34ch] text-[16.5px]">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

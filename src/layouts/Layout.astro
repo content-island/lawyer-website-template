@@ -1,0 +1,107 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { getGeneral, getTheme, getPageMeta, getSettings, getUiText } from '@layouts/api';
+import CookieBanner from '@layouts/components/CookieBanner.astro';
+import WhatsAppFloat from '@layouts/components/WhatsAppFloat.astro';
+import { DEFAULT_LANGUAGE } from '@core/constants';
+import type { LanguageAlternate } from '@core/helpers';
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang: LanguageCode;
+  cookiesPageUrl: string;
+  /** Esta página en cada idioma: <link rel="alternate" hreflang> */
+  alternates?: LanguageAlternate[];
+}
+
+const { lang, alternates = [] } = Astro.props;
+
+const [general, theme, pageMeta, settings, ui] = await Promise.all([
+  getGeneral(lang),
+  getTheme(lang),
+  getPageMeta(lang),
+  getSettings(lang),
+  getUiText(lang),
+]);
+
+// Variables CSS dinámicas desde el Theme de Content Island (4 colores + 4 fuentes).
+// El resto de colores se calculan en global.css a partir de estos.
+const themeVariables = [
+  `--font-name-display: '${theme.fontDisplay.name}'`,
+  `--font-name-title: '${theme.fontTitle.name}'`,
+  `--font-name-body: '${theme.fontBody.name}'`,
+  `--font-name-signature: '${theme.fontSignature.name}'`,
+  `--color-primary: ${theme.colorPrimary}`,
+  `--color-secondary: ${theme.colorSecondary}`,
+  `--color-background: ${theme.colorBackground}`,
+  `--color-tertiary: ${theme.colorTertiary}`,
+].join('; ');
+
+const siteName = `${settings.lawyerName} · ${settings.role}`;
+const title = Astro.props.title ?? pageMeta.title;
+const description = Astro.props.description ?? pageMeta.description;
+const { cookiesPageUrl } = Astro.props;
+const fontUrls = [theme.fontDisplay, theme.fontTitle, theme.fontBody, theme.fontSignature].map(f => f.url);
+---
+
+<!doctype html>
+<html lang={lang} style={themeVariables}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href={general.favIcon.url} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {fontUrls.map(url => <link href={url} rel="stylesheet" />)}
+
+    <title>{title}</title>
+    {/* hreflang necesita URLs absolutas: solo se genera cuando hay dominio (`site` en astro.config.mjs) */}
+    {Astro.site && alternates.length > 1 && alternates.map(alt => <link rel="alternate" hreflang={alt.lang} href={new URL(alt.url, Astro.site).href} />)}
+    {Astro.site && alternates.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(alternates.find(a => a.lang === DEFAULT_LANGUAGE)?.url ?? '/', Astro.site).href} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+
+    <!-- Activa las animaciones de entrada solo si hay JS (sin JS el contenido se ve igual) -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <slot />
+    <WhatsAppFloat href={settings.whatsappHref} label={ui.whatsappLabel} />
+    <CookieBanner lang={lang} cookiesPageUrl={cookiesPageUrl} />
+
+    <script>
+      // Fade-in desde la izquierda al entrar en pantalla.
+      // Los hijos de [data-reveal-group] se escalonan automáticamente.
+      document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach(group => {
+        const step = Number(group.dataset.revealGroup) || 90;
+        group.querySelectorAll<HTMLElement>(':scope > [data-reveal]').forEach((el, i) => {
+          el.style.setProperty('--reveal-delay', `${i * step}ms`);
+        });
+      });
+
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if (!('IntersectionObserver' in window)) {
+        targets.forEach(el => el.classList.add('is-visible'));
+      } else {
+        const observer = new IntersectionObserver(
+          entries => {
+            entries.forEach(entry => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+        );
+        targets.forEach(el => observer.observe(el));
+      }
+    </script>
+  </body>
+</html>

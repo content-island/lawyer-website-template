@@ -1,0 +1,39 @@
+---
+/**
+ * Últimos artículos en la home. Si no hay ninguno publicado, la sección no se pinta.
+ * Cada tarjeta abre su artículo y "Ver todos" lleva al listado completo.
+ */
+import type { LanguageCode } from '@content-island/api-client';
+import { ArticleCard, SectionHead } from '@components/index';
+import { routes } from '@core/constants';
+import { getArticles, getArticlesExtra, getLawyerPage } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+  sectionId: string;
+  /** Número de artículos que se muestran en la home */
+  limit?: number;
+}
+const { lang, sectionId, limit = 3 } = Astro.props;
+const articles = await getArticles(lang);
+const [{ articlesHead: head }, extra] = articles.length ? await Promise.all([getLawyerPage(lang), getArticlesExtra(lang)]) : [{}];
+const latest = articles.slice(0, limit);
+---
+
+{
+  head && extra && (
+    <section class="section" id={sectionId}>
+      <div class="wrap">
+        <SectionHead head={head} />
+        <div class="grid grid-cols-3 gap-9 max-lg:grid-cols-2 max-sm:grid-cols-1" data-reveal-group="120">
+          {latest.map((article, position) => <ArticleCard article={article} position={position} lang={lang} />)}
+        </div>
+        <div class="mt-11 flex justify-end" data-reveal="right">
+          <a class="btn btn--line max-sm:w-full" href={routes.articles(lang)}>
+            {extra.allLabel}
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}

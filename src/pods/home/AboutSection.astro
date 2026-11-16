@@ -1,0 +1,58 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { renderEmphasis } from '@core/helpers';
+import { getLawyerPage, getSettings, getUiText } from '@layouts/api';
+
+interface Props {
+  lang: LanguageCode;
+  sectionId: string;
+}
+const { lang, sectionId } = Astro.props;
+const [{ about }, settings, ui] = await Promise.all([getLawyerPage(lang), getSettings(lang), getUiText(lang)]);
+// La colegiación no se escribe a mano: sale de Settings (colegio, número y año) y va la primera
+const barMembership = {
+  title: settings.barAssociation,
+  detail: `${ui.barNumberPrefix} ${settings.barNumber} ${ui.barSinceLabel} ${settings.barSince}`,
+};
+const groups = [
+  { title: about.educationTitle, items: about.education },
+  { title: about.membershipsTitle, items: [barMembership, ...about.memberships] },
+];
+---
+
+<section class="section" id={sectionId}>
+  <div class="wrap grid-12">
+    <p class="eyebrow col-[1/4] pt-3 max-xl:col-span-full max-xl:pt-0" data-reveal>{about.eyebrow}</p>
+    <div class="col-[4/10] max-xl:col-span-full">
+      <h2 class="h2 mb-7" data-reveal set:html={renderEmphasis(about.title)} />
+      <p class="font-title text-[19px] leading-[1.7]" data-reveal style="--reveal-delay:100ms">{about.intro}</p>
+      <p class="mt-[18px]" data-reveal style="--reveal-delay:180ms">{about.body}</p>
+      <p class="font-sign mt-[30px] text-[58px] leading-none max-sm:text-[48px]" aria-hidden="true" data-reveal style="--reveal-delay:260ms">
+        {about.signature}
+      </p>
+      <p class="text-ink-soft mt-1 text-[13px] tracking-[0.04em]">{about.signatureMeta}</p>
+    </div>
+    <aside
+      class="border-rule col-[10/13] self-start border-l pl-6 max-xl:col-span-full max-xl:grid max-xl:grid-cols-2 max-xl:gap-6 max-xl:border-t max-xl:border-l-0 max-xl:pt-7 max-xl:pl-0 max-sm:grid-cols-1"
+      aria-label={new Intl.ListFormat(lang).format(groups.map(g => g.title))}
+      data-reveal="right"
+      style="--reveal-delay:200ms"
+    >
+      {
+        groups.map(group => (
+          <div>
+            <h3 class="font-body text-ink-soft mb-3.5 text-[12.5px] font-semibold tracking-[0.16em] uppercase">{group.title}</h3>
+            <dl class="mt-0 mb-[30px]">
+              {group.items.map(item => (
+                <>
+                  <dt class="font-title text-[16px] leading-[1.35]">{item.title}</dt>
+                  <dd class="text-ink-soft mx-0 mt-0.5 mb-3.5 text-[13.5px]">{item.detail}</dd>
+                </>
+              ))}
+            </dl>
+          </div>
+        ))
+      }
+    </aside>
+  </div>
+</section>
