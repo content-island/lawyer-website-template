@@ -1,10 +1,10 @@
 ---
 /**
- * Hero con 3 estilos elegibles desde el contenido (Hero.heroVariant). Figma: página Diseño, "Hero 2 · Marco y trama" y "Hero 3 · Geométrico".
- *   classic   (por defecto) · retrato + fondo geométrico desenfocado con el cuadrado girando
- *   framed     (Hero 2)     · franja de color al fondo + marco de línea desplazado y trama diagonal que se desliza muy despacio
- *   geometric  (Hero 3)     · retrato dentro de una retícula 3×3 con piezas del patrón (aparecen una a una)
- * En móvil (≤900px) los tres usan la foto de fondo con degradado (Figma: Mobile > Hero).
+ * Hero with 3 styles selectable from content (Hero.heroVariant). Figma: Diseño page, "Hero 2 · Marco y trama" and "Hero 3 · Geométrico".
+ *   classic   (default)  · portrait + blurred geometric background with a rotating square
+ *   framed     (Hero 2)  · color band in the background + offset line frame and a very slowly sliding diagonal hatch
+ *   geometric  (Hero 3)  · portrait inside a 3×3 grid with pattern tiles (appearing one by one)
+ * On mobile (≤900px) all three use the background photo with a gradient (Figma: Mobile > Hero).
  */
 import type { LanguageCode } from '@content-island/api-client';
 import { GeoTile } from '@components/index';
@@ -24,7 +24,7 @@ const isClassic = variant === 'classic';
 const isGeometric = variant === 'geometric';
 const isFramed = variant === 'framed';
 
-// Retícula 3×3 del estilo geométrico: el retrato ocupa 2×2 y el resto son piezas
+// 3×3 grid for the geometric style: the portrait takes 2×2 and the rest are tiles
 const mosaicTiles: GeoMotif[] = ['peine', 'molinete', 'estrella', 'cuarto-redondeado', 'media-luna'];
 const stripTiles: GeoMotif[] = ['estrella', 'cuarto-redondeado', 'peine', 'molinete', 'media-luna'];
 
@@ -40,12 +40,12 @@ const shape = 'absolute block';
     isGeometric && 'max-tab:min-h-[954px] max-tab:pb-[79px]',
   ]}
 >
-  {/* ── Fondos de escritorio ── */}
+  {/* ── Desktop backgrounds ── */}
   {
     isClassic && (
       <div class="pointer-events-none absolute inset-0 max-tab:hidden" aria-hidden="true">
         <span class={`${shape} bg-accent animate-blob top-[-240px] left-[52.8%] size-[780px] rounded-full opacity-16 blur-[75px]`} />
-        {/* El cuadrado gira hacia la derecha de forma continua y muy lenta */}
+        {/* The square rotates clockwise continuously and very slowly */}
         <span class={`${shape} bg-accent animate-square-spin top-[460px] left-[73.6%] size-[420px] rounded-[48px] opacity-12 blur-[45px]`} />
         <span class={`${shape} bg-accent animate-blob top-[560px] left-[-200px] size-[540px] rounded-full opacity-7 blur-[65px] [animation-delay:-7s]`} />
         <span class={`${shape} border-accent top-[10px] left-[64.6%] size-[600px] rounded-full border-[1.5px] opacity-22`} />
@@ -74,7 +74,7 @@ const shape = 'absolute block';
         data-reveal
         set:html={renderEmphasis(hero.title, 'not-italic text-accent max-tab:text-accent-light')}
       />
-      {/* 54ch: la primera línea termina en «cómo» y el párrafo no se acerca tanto al retrato */}
+      {/* 54ch: the first line ends at «cómo» and the paragraph stays clear of the portrait */}
       <p class="lead tab:max-w-[54ch] max-tab:text-on-ink/85 max-tab:font-body mb-[34px] max-tab:mb-6 max-tab:text-[16px] max-tab:leading-[1.6]" data-reveal>
         {hero.subtitle}
       </p>
@@ -89,7 +89,7 @@ const shape = 'absolute block';
       </div>
     </div>
 
-    {/* ── Retrato: en móvil siempre es la foto de fondo; en escritorio depende del estilo ── */}
+    {/* ── Portrait: on mobile it's always the background photo; on desktop it depends on the style ── */}
     <figure
       class:list={[
         'col-[8/13] m-0 max-tab:absolute max-tab:inset-x-0 max-tab:top-0 max-tab:z-0 max-tab:h-[620px]',
@@ -118,9 +118,9 @@ const shape = 'absolute block';
         {
           isFramed && (
             <div class="pointer-events-none max-tab:hidden" aria-hidden="true">
-              {/* Trama diagonal fina (como papel timbrado) que se desliza muy despacio, asomando por la derecha */}
+              {/* Fine diagonal hatch (like stamped paper) sliding very slowly, peeking out on the right */}
               <span class={`${shape} hatch animate-hatch-drift top-[56px] right-[-72px] h-[62%] w-[78%] opacity-35`} />
-              {/* Marco de línea desplazado arriba a la izquierda, con una esquina marcada */}
+              {/* Line frame offset to the top left, with a marked corner */}
               <span class={`${shape} border-accent top-[-28px] right-[28px] bottom-[28px] left-[-28px] border-[1.5px] opacity-45`} />
               <span class={`${shape} bg-accent top-[-33px] left-[-33px] size-2.5`} />
             </div>
@@ -134,7 +134,7 @@ const shape = 'absolute block';
 
     {
       isGeometric && (
-        // Mismas columnas que el clásico; el mosaico es más bajo que el retrato, así que va centrado en vertical respecto al texto
+        // Same columns as classic; the mosaic is shorter than the portrait, so it's vertically centered against the text
         <figure class="col-[8/13] m-0 self-center pb-[clamp(40px,6vw,88px)] max-tab:hidden">
           <div class="grid grid-cols-3 gap-1.5" data-reveal-group="90">
             <div class="bg-placeholder col-span-2 row-span-2 overflow-hidden" data-reveal="zoom">
@@ -163,7 +163,7 @@ const shape = 'absolute block';
     }
   </div>
 
-  {/* ── Detalles solo móvil ── */}
+  {/* ── Mobile-only details ── */}
   {
     isGeometric && (
       <div class="absolute inset-x-0 bottom-0 z-2 grid h-[79px] grid-cols-5 tab:hidden" aria-hidden="true">

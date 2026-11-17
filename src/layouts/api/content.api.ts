@@ -35,8 +35,8 @@ export const getHeader = async (lang: LanguageCode): Promise<Header> =>
   await client.getContent<Header>({ contentType: 'Header', language: lang, includeRelatedContent: true });
 
 /**
- * La API resuelve un solo nivel de relaciones: las columnas llegan resueltas, pero sus enlaces llegan como ids.
- * Se piden todos los NavigationItem del idioma y se sustituyen.
+ * The API resolves only one level of relations: columns arrive resolved, but their links arrive as ids.
+ * All NavigationItems for the language are fetched and substituted.
  */
 export const getFooter = async (lang: LanguageCode): Promise<Footer> => {
   const [footer, navItems] = await Promise.all([
@@ -56,9 +56,9 @@ export const getFooter = async (lang: LanguageCode): Promise<Footer> => {
 };
 
 const uiTextCache = new Map<LanguageCode, Promise<UiText>>();
-/** Textos de interfaz. Se piden una vez por idioma y build */
+/** UI strings. Fetched once per language and build */
 export const getUiText = (lang: LanguageCode): Promise<UiText> => {
-  // En desarrollo no se guarda: así los cambios de Content Island se ven al recargar
+  // Not cached in development, so Content Island changes show up on reload
   if (import.meta.env.DEV) return client.getContent<UiText>({ contentType: 'UiText', language: lang });
   if (!uiTextCache.has(lang)) uiTextCache.set(lang, client.getContent<UiText>({ contentType: 'UiText', language: lang }));
   return uiTextCache.get(lang)!;
@@ -68,18 +68,18 @@ export const getCookieBanner = async (lang: LanguageCode): Promise<CookieBanner>
   await client.getContent<CookieBanner>({ contentType: 'CookieBanner', language: lang });
 
 // ============================================
-// Home: una sola entrada LawyerPage con todas las secciones
+// Home: a single LawyerPage entry with all sections
 // ============================================
 
 const lawyerPageCache = new Map<LanguageCode, Promise<LawyerPage>>();
 
 /**
- * La API resuelve un solo nivel de relaciones: las secciones llegan resueltas, pero los CvEntry
- * de About (formación, colegiaciones) y de ContactSection (RGPD) llegan como ids y aquí se sustituyen.
- * En la build se pide una vez por idioma (la usan todas las secciones de la home); en desarrollo, en cada recarga.
+ * The API resolves only one level of relations: sections arrive resolved, but the CvEntry items
+ * in About (education, bar memberships) and ContactSection (GDPR) arrive as ids and are substituted here.
+ * At build time it's fetched once per language (all home sections use it); in development, on every reload.
  */
 export const getLawyerPage = (lang: LanguageCode): Promise<LawyerPage> => {
-  // En desarrollo no se guarda: así los cambios de Content Island se ven al recargar
+  // Not cached in development, so Content Island changes show up on reload
   if (import.meta.env.DEV) return fetchLawyerPage(lang);
   if (!lawyerPageCache.has(lang)) lawyerPageCache.set(lang, fetchLawyerPage(lang));
   return lawyerPageCache.get(lang)!;
@@ -106,10 +106,10 @@ const fetchLawyerPage = async (lang: LanguageCode): Promise<LawyerPage> => {
 };
 
 // ============================================
-// Artículos (opcionales: si no hay ninguno, no se muestra nada)
+// Articles (optional: if there are none, nothing is shown)
 // ============================================
 
-/** Artículos publicados, del más reciente al más antiguo. Lista vacía si no hay. */
+/** Published articles, most recent first. Empty list if there are none. */
 export const getArticles = async (lang: LanguageCode): Promise<Article[]> =>
   await client.getContentList<Article>({ contentType: 'Article', language: lang, sort: { 'fields.date': 'desc' } });
 

@@ -2,13 +2,13 @@ import type { LanguageCode } from '@content-island/api-client';
 import { LANGUAGES } from './language.constants';
 
 /**
- * Idioma inicial = el PRIMERO de la lista de idiomas del proyecto en Content Island.
- * Se sirve en la raíz, sin prefijo y sin redirecciones (/, /articles/…); el resto lleva prefijo (/es/, /es/articulos/…).
- * Si se reordenan o se quitan idiomas en Content Island, las rutas cambian solas en la siguiente build.
+ * Default language = the FIRST one in the project's language list in Content Island.
+ * It is served at the root, with no prefix and no redirects (/, /articles/…); the rest are prefixed (/es/, /es/articulos/…).
+ * If languages are reordered or removed in Content Island, routes update automatically on the next build.
  */
 export const DEFAULT_LANGUAGE: LanguageCode = LANGUAGES[0]!;
 
-/** Segmento de la URL de artículos en cada idioma. Para un idioma nuevo, añadirlo aquí (si falta se usa "articles") */
+/** Articles URL segment per language. For a new language, add it here (falls back to "articles") */
 const ARTICLES_SEGMENTS: Partial<Record<LanguageCode, string>> = {
   es: 'articulos',
   en: 'articles',
@@ -21,8 +21,8 @@ const ARTICLES_SEGMENTS: Partial<Record<LanguageCode, string>> = {
 export const articlesSegment = (lang: LanguageCode) => ARTICLES_SEGMENTS[lang] ?? 'articles';
 
 /**
- * Anclas (#id) de las secciones de la home que no están en el menú, en cada idioma (si falta un idioma, se usan las inglesas).
- * Las del menú (áreas, sobre mí, artículos, contacto) salen de las URL de NavigationItem en Content Island.
+ * Anchors (#id) for home sections not in the menu, per language (if a language is missing, the English ones are used).
+ * Menu anchors (areas, about, articles, contact) come from the NavigationItem URLs in Content Island.
  */
 type FixedSection = 'hero' | 'why' | 'process' | 'reviews' | 'faq';
 const SECTION_ANCHORS: Partial<Record<LanguageCode, Record<FixedSection, string>>> = {
@@ -31,7 +31,7 @@ const SECTION_ANCHORS: Partial<Record<LanguageCode, Record<FixedSection, string>
 };
 export const sectionAnchor = (lang: LanguageCode, section: FixedSection) => (SECTION_ANCHORS[lang] ?? SECTION_ANCHORS.en!)[section];
 
-/** "" para el idioma inicial, "/es" para el resto */
+/** "" for the default language, "/es" for the rest */
 export const langPrefix = (lang: LanguageCode) => (lang === DEFAULT_LANGUAGE ? '' : `/${lang}`);
 
 export const routes = {
@@ -39,8 +39,8 @@ export const routes = {
   homeSection: (lang: LanguageCode, sectionId: string) => `${langPrefix(lang)}/#${sectionId}`,
   articles: (lang: LanguageCode) => `${langPrefix(lang)}/${articlesSegment(lang)}/`,
   article: (lang: LanguageCode, slug: string) => `${langPrefix(lang)}/${articlesSegment(lang)}/${slug}/`,
-  /** Página por slug de Content Island (páginas legales) */
+  /** Page by Content Island slug (legal pages) */
   page: (lang: LanguageCode, slug: string) => `${langPrefix(lang)}/${slug.replace(/^\/+/, '')}`,
-  /** URL de un NavigationItem de Content Island ("/#areas", "/politica-de-cookies") en el idioma pedido */
+  /** URL of a Content Island NavigationItem ("/#areas", "/politica-de-cookies") in the requested language */
   fromCms: (lang: LanguageCode, url: string) => `${langPrefix(lang)}${url.startsWith('/') ? url : `/${url}`}`,
 };

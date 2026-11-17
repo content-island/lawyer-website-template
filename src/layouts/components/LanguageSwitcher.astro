@@ -1,11 +1,11 @@
 ---
 /**
- * Selector de idioma. Cada opción lleva a la MISMA página en ese idioma.
- *   1 idioma   → no se muestra
- *   2 idiomas  → conmutador con icono de traducir y los dos códigos (el actual marcado).
- *                En móvil solo el icono y el idioma al que se cambia, para que quepa junto al logo y el menú
- *   3 o más    → icono de bola del mundo + idioma actual, con desplegable de idiomas escritos en su propio idioma
- * El orden es el de Content Island (Idiomas).
+ * Language switcher. Each option leads to the SAME page in that language.
+ *   1 language   → hidden
+ *   2 languages  → toggle with a translate icon and both codes (current one highlighted).
+ *                  On mobile only the icon and the target language, so it fits next to the logo and menu
+ *   3 or more    → globe icon + current language, with a dropdown of languages written in their own language
+ * The order follows Content Island (Languages).
  */
 import { nativeLanguageName, type LanguageAlternate } from '@core/helpers';
 
@@ -84,7 +84,7 @@ const pill = 'border-rule inline-flex items-center rounded-full border text-[13p
 }
 
 <script>
-  // Desplegable de idiomas: se cierra al pulsar fuera o con Escape
+  // Language dropdown: closes on outside click or Escape
   const menus = document.querySelectorAll<HTMLDetailsElement>('[data-lang-menu]');
   document.addEventListener('click', event => {
     menus.forEach(menu => {

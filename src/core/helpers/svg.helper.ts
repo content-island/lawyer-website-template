@@ -2,22 +2,22 @@ import sanitizeHtml from 'sanitize-html';
 
 export interface InlineSvg {
   viewBox: string;
-  /** Atributos de presentación del <svg> raíz (fill, stroke, stroke-width…) ya pasados a currentColor */
+  /** Presentation attributes of the root <svg> (fill, stroke, stroke-width…) already converted to currentColor */
   attributes: Record<string, string>;
   body: string;
 }
 
 const SHAPES = ['g', 'path', 'circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon'];
-/** Solo para logos: texto (p. ej. un monograma con iniciales) */
+/** Logos only: text (e.g. a monogram with initials) */
 const TEXT = ['text', 'tspan'];
 const TEXT_ATTRS = ['font-family', 'font-size', 'font-weight', 'font-style', 'letter-spacing', 'text-anchor', 'dominant-baseline', 'dx', 'dy'];
 const PRESENTATION = ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'fill-rule', 'clip-rule', 'opacity', 'transform'];
 const GEOMETRY = ['d', 'cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'points'];
 
 /**
- * Cualquier color pasa a currentColor, para que el SVG tome el color del tema. Se respetan "none" y los colores
- * del tema escritos como var(--color-…), con o sin color de reserva (p. ej. stroke="var(--color-accent, #1F4F82)":
- * en la web toma el acento del tema y, abierto suelto, el color de reserva).
+ * Any color becomes currentColor so the SVG takes the theme color. "none" and theme colors written as
+ * var(--color-…) are kept, with or without a fallback (e.g. stroke="var(--color-accent, #1F4F82)":
+ * on the site it takes the theme accent and, opened standalone, the fallback color).
  */
 const toCurrentColor = (name: string, value: string) =>
   (name === 'fill' || name === 'stroke') && value.trim() !== 'none' && !/^var\(--color-[\w-]+(\s*,\s*[^()]+)?\)$/.test(value.trim()) ? 'currentColor' : value;
@@ -38,13 +38,13 @@ const load = async (url: string, allowText: boolean): Promise<InlineSvg | null> 
       PRESENTATION.filter(name => rootAttrs[name] !== undefined).map(name => [name, toCurrentColor(name, rootAttrs[name]!)]),
     );
 
-    // Solo formas básicas y sus atributos: fuera scripts, estilos, enlaces y eventos
+    // Only basic shapes and their attributes: no scripts, styles, links or events
     const inner = source.slice(source.indexOf(root[0]) + root[0].length, source.lastIndexOf('</svg>'));
     const tags = allowText ? [...SHAPES, ...TEXT] : SHAPES;
     const body = sanitizeHtml(inner, {
       allowedTags: tags,
       allowedAttributes: Object.fromEntries(tags.map(tag => [tag, [...PRESENTATION, ...GEOMETRY, ...(allowText ? TEXT_ATTRS : [])]])),
-      // Las formas SVG se cierran solas (<circle/>): sin esto se anidarían unas dentro de otras
+      // SVG shapes are self-closing (<circle/>): without this they would nest inside each other
       parser: { lowerCaseAttributeNames: false, recognizeSelfClosing: true },
       selfClosing: SHAPES.filter(tag => tag !== 'g'),
       transformTags: Object.fromEntries(
@@ -63,13 +63,13 @@ const load = async (url: string, allowText: boolean): Promise<InlineSvg | null> 
   }
 };
 
-/** Descarga (una sola vez por URL) un icono SVG de Content Island y lo prepara para insertarlo en línea */
+/** Downloads (once per URL) a Content Island SVG icon and prepares it for inlining */
 export const loadSvgIcon = (url: string): Promise<InlineSvg | null> => {
   if (!cache.has(url)) cache.set(url, load(url, false));
   return cache.get(url)!;
 };
 
-/** Igual que loadSvgIcon, pero admite texto (<text>): para logos tipo monograma */
+/** Same as loadSvgIcon, but allows text (<text>): for monogram-style logos */
 export const loadSvgLogo = (url: string): Promise<InlineSvg | null> => {
   const key = `logo:${url}`;
   if (!cache.has(key)) cache.set(key, load(url, true));

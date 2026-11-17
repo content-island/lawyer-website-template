@@ -2,10 +2,10 @@ const escapeHtml = (text: string): string =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
- * Convierte la convención de títulos de Content Island en HTML seguro:
+ * Converts the Content Island title convention into safe HTML:
  *   "Lo que *me diferencia*."  ->  "Lo que <em class="…">me diferencia</em>."
- *   "Defendemos,|*a tu lado*"  ->  salto de línea en cada "|" (cortes de línea de Figma). Los títulos son Short text.
- *   También acepta \n por compatibilidad con títulos antiguos.
+ *   "Defendemos,|*a tu lado*"  ->  line break at each "|" (Figma line breaks). Titles are Short text.
+ *   Also accepts \n for compatibility with older titles.
  */
 export const renderEmphasis = (text: string, emClass = 'emph'): string =>
   escapeHtml(text)
@@ -13,9 +13,9 @@ export const renderEmphasis = (text: string, emClass = 'emph'): string =>
     .replace(/[ \t]*(?:\||\r?\n)[ \t]*/g, '<br />');
 
 /**
- * Frase de credenciales:
- *   {{texto}}  -> resaltado en tinta
- *   **cifra**  -> cifra grande en cursiva de acento
+ * Credentials sentence:
+ *   {{text}}    -> highlighted in ink
+ *   **figure**  -> large italic accent figure
  */
 export const renderCredentials = (
   text: string,
@@ -28,14 +28,14 @@ export const renderCredentials = (
     .replace(/\{\{(.+?)\}\}/g, `<span class="${classes.highlight}">$1</span>`)
     .replace(/\*\*(.+?)\*\*/g, `<b class="${classes.number}">$1</b>`);
 
-/** Saltos de línea -> <br> (para direcciones y horarios) */
+/** Line breaks -> <br> (for addresses and opening hours) */
 export const renderLines = (text: string): string => escapeHtml(text).replace(/\n/g, '<br />');
 
-/** Fecha ISO -> "12 de noviembre de 2026" / "November 12, 2026" (páginas legales) */
+/** ISO date -> "12 de noviembre de 2026" / "November 12, 2026" (legal pages) */
 export const formatLongDate = (iso: string, lang: string): string =>
   new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
 
-/** Fecha ISO -> "28 oct 2026" */
+/** ISO date -> "28 oct 2026" */
 export const formatDate = (iso: string, lang: string): string =>
   new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', year: 'numeric' })
     .format(new Date(iso))

@@ -1,5 +1,4 @@
 ---
-/** Tarjeta de artículo (Figma: Post Card). Portada: imagen si la hay; si no, portada tipográfica con color del tema. */
 import type { LanguageCode } from '@content-island/api-client';
 import { routes } from '@core/constants';
 import { coverTone, formatDate } from '@core/helpers';
@@ -7,10 +6,10 @@ import type { Article } from '@models/index';
 
 interface Props {
   article: Article;
-  /** Posición en la lista completa (más reciente = 0): decide el color de la portada tipográfica */
+  /** Position in the full list (most recent = 0): decides the typographic cover color */
   position: number;
   lang: LanguageCode;
-  /** Muestra el resumen debajo del título (listado de artículos) */
+  /** Shows the summary below the title (article list) */
   showExcerpt?: boolean;
   readMoreLabel?: string;
 }

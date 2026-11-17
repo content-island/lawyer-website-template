@@ -47,11 +47,11 @@ const { title, description, learnMore, acceptAll, onlyEssential } = await getCoo
     try {
       localStorage.setItem(KEY, value);
     } catch {
-      /* almacenamiento no disponible */
+      /* storage not available */
     }
   };
 
-  // EJEMPLO: aquí se cargarían Google Analytics u otros scripts solo con consentimiento.
+  // EXAMPLE: load Google Analytics or other scripts here, only with consent.
   const loadTrackingScripts = () => {};
 
   const banner = document.getElementById('cookie-banner');

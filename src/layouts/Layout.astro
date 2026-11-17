@@ -12,7 +12,7 @@ interface Props {
   description?: string;
   lang: LanguageCode;
   cookiesPageUrl: string;
-  /** Esta página en cada idioma: <link rel="alternate" hreflang> */
+  /** This page in each language: <link rel="alternate" hreflang> */
   alternates?: LanguageAlternate[];
 }
 
@@ -26,8 +26,8 @@ const [general, theme, pageMeta, settings, ui] = await Promise.all([
   getUiText(lang),
 ]);
 
-// Variables CSS dinámicas desde el Theme de Content Island (4 colores + 4 fuentes).
-// El resto de colores se calculan en global.css a partir de estos.
+// Dynamic CSS variables from the Content Island Theme (4 colors + 4 fonts).
+// The remaining colors are derived from these in global.css.
 const themeVariables = [
   `--font-name-display: '${theme.fontDisplay.name}'`,
   `--font-name-title: '${theme.fontTitle.name}'`,
@@ -60,7 +60,7 @@ const fontUrls = [theme.fontDisplay, theme.fontTitle, theme.fontBody, theme.font
     {fontUrls.map(url => <link href={url} rel="stylesheet" />)}
 
     <title>{title}</title>
-    {/* hreflang necesita URLs absolutas: solo se genera cuando hay dominio (`site` en astro.config.mjs) */}
+    {/* hreflang needs absolute URLs: only generated when a domain is set (`site` in astro.config.mjs) */}
     {Astro.site && alternates.length > 1 && alternates.map(alt => <link rel="alternate" hreflang={alt.lang} href={new URL(alt.url, Astro.site).href} />)}
     {Astro.site && alternates.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(alternates.find(a => a.lang === DEFAULT_LANGUAGE)?.url ?? '/', Astro.site).href} />}
     <meta property="og:title" content={title} />
@@ -68,7 +68,7 @@ const fontUrls = [theme.fontDisplay, theme.fontTitle, theme.fontBody, theme.font
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteName} />
 
-    <!-- Activa las animaciones de entrada solo si hay JS (sin JS el contenido se ve igual) -->
+    <!-- Enables entrance animations only when JS is available (without JS the content looks the same) -->
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
@@ -77,8 +77,8 @@ const fontUrls = [theme.fontDisplay, theme.fontTitle, theme.fontBody, theme.font
     <CookieBanner lang={lang} cookiesPageUrl={cookiesPageUrl} />
 
     <script>
-      // Fade-in desde la izquierda al entrar en pantalla.
-      // Los hijos de [data-reveal-group] se escalonan automáticamente.
+      // Fade-in from the left when entering the viewport.
+      // Children of [data-reveal-group] are staggered automatically.
       document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach(group => {
         const step = Number(group.dataset.revealGroup) || 90;
         group.querySelectorAll<HTMLElement>(':scope > [data-reveal]').forEach((el, i) => {

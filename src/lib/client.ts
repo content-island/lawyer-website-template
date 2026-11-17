@@ -1,7 +1,7 @@
 /**
- * Cliente de Content Island (proyecto «LAWYER PERSONAL SITE V1»).
- * Usa el token de SOLO LECTURA de `.env` (CONTENT_ISLAND_ACCESS_TOKEN).
- * Solo devuelve contenido publicado.
+ * Content Island client (project «LAWYER PERSONAL SITE V1»).
+ * Uses the READ-ONLY token from `.env` (CONTENT_ISLAND_ACCESS_TOKEN).
+ * Only returns published content.
  */
 import { createClient } from '@content-island/api-client';
 import { CONTENT_ISLAND_ACCESS_TOKEN } from 'astro:env/server';

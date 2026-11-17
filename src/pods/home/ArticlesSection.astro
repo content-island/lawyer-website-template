@@ -1,7 +1,7 @@
 ---
 /**
- * Últimos artículos en la home. Si no hay ninguno publicado, la sección no se pinta.
- * Cada tarjeta abre su artículo y "Ver todos" lleva al listado completo.
+ * Latest articles on the home page. If none are published, the section is not rendered.
+ * Each card opens its article and "Ver todos" links to the full list.
  */
 import type { LanguageCode } from '@content-island/api-client';
 import { ArticleCard, SectionHead } from '@components/index';
@@ -11,7 +11,7 @@ import { getArticles, getArticlesExtra, getLawyerPage } from '@layouts/api';
 interface Props {
   lang: LanguageCode;
   sectionId: string;
-  /** Número de artículos que se muestran en la home */
+  /** Number of articles shown on the home page */
   limit?: number;
 }
 const { lang, sectionId, limit = 3 } = Astro.props;

@@ -1,5 +1,5 @@
 ---
-/** Página de un artículo (/articles/<slug>/ · /es/articulos/<slug>/). */
+/** Single article page (/articles/<slug>/ · /es/articulos/<slug>/). */
 import type { LanguageCode } from '@content-island/api-client';
 import { ArticleCard } from '@components/index';
 import { routes } from '@core/constants';
@@ -25,7 +25,7 @@ const cover = article.coverImage;
 ---
 
 <main>
-  <!-- Cabecera del artículo: con imagen de portada (oscurecida con la tinta del tema) o portada tipográfica de color -->
+  <!-- Article header: with a cover image (darkened with the theme ink) or a colored typographic cover -->
   <header class:list={['text-on-ink relative overflow-hidden', cover ? 'bg-ink' : coverTone(position(slug))]}>
     {
       cover && (
@@ -45,7 +45,7 @@ const cover = article.coverImage;
             <time datetime={article.date}>{formatDate(article.date, lang)}</time> · {article.readingTime}
           </p>
         </div>
-        <!-- La opacidad va en el span interior para que no la pise la animación de aparición -->
+        <!-- Opacity goes on the inner span so the reveal animation doesn't override it -->
         <span aria-hidden="true" data-reveal="right"
           ><span class="font-title block text-[clamp(64px,8vw,112px)] leading-[0.9] opacity-30">{article.reference}</span></span
         >

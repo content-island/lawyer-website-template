@@ -1,24 +1,24 @@
 @import 'tailwindcss';
 
 /* ============================================
-   1. VARIABLES DEL TEMA (en <html>)
-   Content Island (contentType "Theme") las sobrescribe en Layout.astro:
+   1. THEME VARIABLES (on <html>)
+   Content Island (contentType "Theme") overrides them in Layout.astro:
    <html style="--color-primary: …; --font-name-title: …">
    ============================================ */
 :root {
-  /* Colores principales del Theme de Content Island (valores por defecto = tema «Azul despacho») */
-  --color-primary: #1f4f82; /* acento */
-  --color-secondary: #1c2b33; /* tinta */
-  --color-background: #f5f4f0; /* fondo general */
-  --color-tertiary: #3c4b3f; /* tercer color (portadas de artículos) */
+  /* Main colors from the Content Island Theme (defaults = «Azul despacho» theme) */
+  --color-primary: #1f4f82; /* accent */
+  --color-secondary: #1c2b33; /* ink */
+  --color-background: #f5f4f0; /* page background */
+  --color-tertiary: #3c4b3f; /* tertiary color (article covers) */
 
-  /* Colores secundarios: no están en Content Island, se calculan a partir de los principales */
-  --color-background-alt: color-mix(in oklab, var(--color-background) 96%, black); /* secciones alternas */
-  --color-card: #ffffff; /* tarjetas y formulario */
-  --color-text-soft: color-mix(in oklab, var(--color-secondary) 76%, white); /* texto secundario */
-  --color-text-on-dark: var(--color-background); /* texto sobre fondo oscuro */
-  --color-border: color-mix(in oklab, var(--color-background) 87%, black); /* líneas y bordes */
-  --color-image-placeholder: color-mix(in oklab, var(--color-background) 90%, black); /* fondo de imagen cargando */
+  /* Secondary colors: not in Content Island, derived from the main ones */
+  --color-background-alt: color-mix(in oklab, var(--color-background) 96%, black); /* alternate sections */
+  --color-card: #ffffff; /* cards and form */
+  --color-text-soft: color-mix(in oklab, var(--color-secondary) 76%, white); /* secondary text */
+  --color-text-on-dark: var(--color-background); /* text on dark background */
+  --color-border: color-mix(in oklab, var(--color-background) 87%, black); /* lines and borders */
+  --color-image-placeholder: color-mix(in oklab, var(--color-background) 90%, black); /* loading image background */
 
   --font-name-display: 'Libre Bodoni';
   --font-name-title: 'Newsreader';
@@ -27,18 +27,18 @@
 }
 
 /* ============================================
-   2. TOKENS TAILWIND (= Figma: Colors / Space / Text styles)
-   Generan utilidades: bg-page, text-accent, border-rule, font-title, animate-square-spin…
+   2. TAILWIND TOKENS (= Figma: Colors / Space / Text styles)
+   They generate utilities: bg-page, text-accent, border-rule, font-title, animate-square-spin…
    ============================================ */
 @theme {
-  /* Puntos de corte (se usan con max-*: max-xl = ≤1180px, max-tab = ≤900px, max-sm = ≤640px) */
+  /* Breakpoints (used with max-*: max-xl = ≤1180px, max-tab = ≤900px, max-sm = ≤640px) */
   --breakpoint-sm: 641px;
   --breakpoint-md: 761px;
   --breakpoint-tab: 901px;
   --breakpoint-lg: 1001px;
   --breakpoint-xl: 1181px;
 
-  /* Colores */
+  /* Colors */
   --color-page: var(--color-background);
   --color-subtle: var(--color-background-alt);
   --color-surface: var(--color-card);
@@ -47,7 +47,7 @@
   --color-ink: var(--color-secondary);
   --color-ink-soft: var(--color-text-soft);
   --color-on-ink: var(--color-text-on-dark);
-  /* Derivados: se calculan a partir del tema */
+  /* Derived: computed from the theme */
   --color-muted-inverse: color-mix(in oklab, var(--color-text-on-dark) 60%, var(--color-secondary));
   --color-footer-text: color-mix(in oklab, var(--color-text-on-dark) 70%, var(--color-secondary));
   --color-rule: var(--color-border);
@@ -56,23 +56,23 @@
   --color-accent-light: color-mix(in oklab, var(--color-primary) 40%, white);
   --color-footer: color-mix(in oklab, var(--color-secondary) 55%, black);
 
-  /* Tipografías */
+  /* Typography */
   --font-display: var(--font-name-display), Georgia, serif;
   --font-title: var(--font-name-title), Georgia, 'Times New Roman', serif;
   --font-body: var(--font-name-body), 'Helvetica Neue', Arial, sans-serif;
   --font-sign: var(--font-name-signature), 'Brush Script MT', cursive;
 
-  /* Curva de las transiciones */
+  /* Transition easing */
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Animaciones */
+  /* Animations */
   --animate-square-spin: square-spin 60s linear infinite;
   --animate-square-spin-slow: square-spin 90s linear infinite reverse;
   --animate-blob: blob-breathe 14s ease-in-out infinite;
   --animate-faq-open: slide-in-left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-cookie-in: slide-in-up-full 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-wa-in: wa-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
-  /* Hero 2 · Marco y trama: la trama diagonal se desliza sin fin, muy despacio (una baldosa de 24px cada 6 s) */
+  /* Hero 2 · Frame and hatch: the diagonal hatch slides endlessly, very slowly (one 24px tile every 6 s) */
   --animate-hatch-drift: hatch-drift 6s linear infinite;
   @keyframes hatch-drift {
     to {
@@ -80,7 +80,7 @@
     }
   }
 
-  /* Cuadrado del fondo del hero: giro continuo a la derecha, muy lento */
+  /* Hero background square: continuous clockwise rotation, very slow */
   @keyframes square-spin {
     from {
       transform: rotate(-18deg);
@@ -89,7 +89,7 @@
       transform: rotate(342deg);
     }
   }
-  /* Respiración muy sutil de las manchas desenfocadas del hero */
+  /* Very subtle breathing of the hero's blurred blobs */
   @keyframes blob-breathe {
     0%,
     100% {
@@ -146,7 +146,7 @@
 }
 
 /* ============================================
-   4. PRIMITIVAS REUTILIZABLES (= componentes de Figma)
+   4. REUSABLE PRIMITIVES (= Figma components)
    ============================================ */
 @layer components {
   .wrap {
@@ -167,7 +167,7 @@
   .lead {
     @apply font-title text-ink-soft max-w-[60ch] text-[clamp(18px,1.6vw,20px)] leading-[1.6];
   }
-  /* Trama diagonal fina (Hero 2). Periodo 16.97px en diagonal = 24px en horizontal, así el desplazamiento casa sin saltos */
+  /* Fine diagonal hatch (Hero 2). A 16.97px diagonal period = 24px horizontally, so the offset loops seamlessly */
   .hatch,
   .hatch-on-ink {
     background-image: repeating-linear-gradient(-45deg, var(--hatch-color) 0 1.5px, transparent 1.5px 16.9706px);
@@ -237,13 +237,13 @@
 }
 
 /* ============================================
-   5. APARICIÓN AL HACER SCROLL (data-reveal)
-     data-reveal          -> desde la izquierda (por defecto)
-     data-reveal="right"  -> desde la derecha
-     data-reveal="up"     -> desde abajo
-     data-reveal="zoom"   -> ligero zoom
-     data-reveal="fade"   -> solo fundido
-   Solo se oculta cuando hay JS (.js en <html>), así sin JS todo se ve.
+   5. REVEAL ON SCROLL (data-reveal)
+     data-reveal          -> from the left (default)
+     data-reveal="right"  -> from the right
+     data-reveal="up"     -> from below
+     data-reveal="zoom"   -> slight zoom
+     data-reveal="fade"   -> fade only
+   Only hidden when JS is available (.js on <html>), so without JS everything is visible.
    ============================================ */
 .js [data-reveal] {
   opacity: 0;

@@ -8,7 +8,7 @@ import { getGeneral, getHeader, getSettings, getUiText, hasArticles } from '@lay
 
 interface Props {
   lang: LanguageCode;
-  /** Esta página en cada idioma (selector de idioma) */
+  /** This page in each language (language switcher) */
   alternates?: LanguageAlternate[];
 }
 
@@ -21,7 +21,7 @@ const [header, settings, showArticles, ui, general] = await Promise.all([
   getGeneral(lang),
 ]);
 
-// En la home los enlaces son anclas (#areas); en el resto de páginas vuelven a la home (/es/#areas)
+// On the home page links are anchors (#areas); on other pages they go back to the home page (/es/#areas)
 const onHome = Astro.url.pathname === routes.home(lang);
 const sectionId = (url: string) => url.replace(/^\/?#?/, '');
 const toSection = (url: string) => (onHome ? `#${sectionId(url)}` : routes.homeSection(lang, sectionId(url)));
@@ -29,14 +29,14 @@ const toSection = (url: string) => (onHome ? `#${sectionId(url)}` : routes.homeS
 const navLinks = [
   { label: header.areas.label, href: toSection(header.areas.url) },
   { label: header.about.label, href: toSection(header.about.url) },
-  // "Artículos" solo aparece si hay artículos publicados, y lleva al listado completo
+  // "Articles" only appears if there are published articles, and links to the full list
   ...(showArticles ? [{ label: header.articles.label, href: routes.articles(lang) }] : []),
   { label: header.contact.label, href: toSection(header.contact.url) },
 ];
 const ctaHref = toSection(header.contact.url);
 ---
 
-<!-- Barra superior -->
+<!-- Top bar -->
 <div class="bg-ink text-on-ink/80 text-[13.5px] max-sm:text-[12.5px]">
   <div class="wrap flex min-h-[42px] flex-wrap items-center justify-between gap-4">
     <span class="tracking-[0.04em]"
@@ -113,12 +113,12 @@ const ctaHref = toSection(header.contact.url);
   toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   document.querySelectorAll('[data-menu-close]').forEach(link => link.addEventListener('click', () => setOpen(false)));
 
-  // Sombra suave en la cabecera al hacer scroll
+  // Soft header shadow on scroll
   const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
-  // Scroll suave con compensación de la cabecera fija
+  // Smooth scroll with fixed header offset
   document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', event => {
       const href = anchor.getAttribute('href');

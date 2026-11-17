@@ -1,6 +1,6 @@
 /**
- * Portada tipográfica de los artículos sin imagen: el color alterna según la posición del artículo
- * (del más reciente al más antiguo) entre tinta, acento y terciario. Los tres salen del tema.
+ * Typographic cover for articles without an image: the color alternates by the article's position
+ * (most recent to oldest) between ink, accent and tertiary. All three come from the theme.
  */
 const COVER_TONES = ['bg-ink', 'bg-accent', 'bg-green'] as const;
 

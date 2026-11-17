@@ -12,7 +12,7 @@ interface Props {
 
 const { lang, type } = Astro.props;
 const [{ text, lastUpdate }, ui] = await Promise.all([getLegalPage(lang, type), getUiText(lang)]);
-// La fecha de la última revisión va justo debajo del título (el primer h1 del markdown)
+// The last revision date goes right below the title (the first h1 in the markdown)
 const updated = `<p class="legal-updated"><time datetime="${lastUpdate}">${ui.legalUpdatedLabel}: ${formatLongDate(lastUpdate, lang)}</time></p>`;
 const body = await sanitizeHTMLWithMarked(text);
 const html = body.includes('</h1>') ? body.replace('</h1>', `</h1>${updated}`) : updated + body;

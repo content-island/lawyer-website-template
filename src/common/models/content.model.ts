@@ -24,8 +24,8 @@ export interface Font {
 }
 
 /**
- * Convención de texto enriquecido para títulos:
- * la parte entre *asteriscos* se destaca con el color de acento (ver core/helpers/emphasis.helper.ts).
+ * Rich text convention for titles:
+ * the part between *asterisks* is highlighted with the accent color (see core/helpers/emphasis.helper.ts).
  */
 export type EmphasisText = string;
 
@@ -36,25 +36,25 @@ export type EmphasisText = string;
 export interface General {
   id: string;
   language: LanguageCode;
-  /** Fecha automática de Content Island (última vez que se guardó la entrada) */
+  /** Automatic Content Island date (last time the entry was saved) */
   lastUpdate?: string; // ISO 8601
   favIcon: Media;
-  /** Logo (SVG). Opcional: si falta, se dibuja un monograma con las iniciales de Settings.lawyerName */
+  /** Logo (SVG). Optional: if missing, a monogram with the initials of Settings.lawyerName is drawn */
   logo?: Media;
 }
 
 /**
- * Tematizado. Cada color se inyecta como variable CSS en <html> (Layout.astro) y de ahí salen todos los
- * tokens de Tailwind y los SVG (GeoTile, trama, iconos…). Ver 1-modelo-content-island.md.
+ * Theming. Each color is injected as a CSS variable on <html> (Layout.astro), and all Tailwind tokens
+ * and SVGs (GeoTile, hatch pattern, icons…) derive from them. See 1-modelo-content-island.md.
  */
 export interface Theme {
   id: string;
   name: string;
-  colorPrimary: string; // acento
-  colorSecondary: string; // tinta
+  colorPrimary: string; // accent
+  colorSecondary: string; // ink
   colorBackground: string;
   colorTertiary: string;
-  fontDisplay: Font; // titular del hero
+  fontDisplay: Font; // hero headline
   fontTitle: Font;
   fontBody: Font;
   fontSignature: Font;
@@ -75,7 +75,7 @@ export interface Settings {
   lawyerFullName: string;
   role: string;
   barAssociation: string;
-  /** Versión corta para la barra superior en móvil (p. ej. "ICA Valencia") */
+  /** Short version for the top bar on mobile (e.g. "ICA Valencia") */
   barAssociationShort: string;
   barNumber: string;
   barSince: string;
@@ -95,7 +95,7 @@ export interface Header {
   id: string;
   areas: NavigationItem;
   about: NavigationItem;
-  /** Solo se muestra en el menú si hay artículos publicados */
+  /** Only shown in the menu if there are published articles */
   articles: NavigationItem;
   contact: NavigationItem;
   ctaLabel: string;
@@ -104,16 +104,16 @@ export interface Header {
 }
 
 /**
- * Estilo visual del hero (Figma: página Diseño).
- *   classic   → retrato + fondo geométrico desenfocado (por defecto)
- *   framed    → Hero 2 · franja de color + marco de línea desplazado + trama diagonal que se desliza
- *   geometric → Hero 3 · retrato en retícula 3×3 con piezas del patrón
+ * Hero visual style (Figma: Diseño page).
+ *   classic   → portrait + blurred geometric background (default)
+ *   framed    → Hero 2 · color band + offset line frame + sliding diagonal hatch
+ *   geometric → Hero 3 · portrait in a 3×3 grid with pattern tiles
  */
 export type HeroVariant = 'classic' | 'framed' | 'geometric';
 
 export interface Hero {
   id: string;
-  /** Si no se indica, se usa "classic" */
+  /** Defaults to "classic" */
   heroVariant?: HeroVariant;
   eyebrow: string;
   title: EmphasisText;
@@ -128,7 +128,7 @@ export interface Hero {
 
 export interface Credentials {
   id: string;
-  /** Frase editorial: {{...}} resalta en tinta y **x** marca la cifra grande en cursiva de acento */
+  /** Editorial sentence: {{...}} highlights in ink and **x** marks the large italic accent figure */
   text: string;
   linkLabel: string;
   language: LanguageCode;
@@ -138,7 +138,7 @@ export interface PracticeArea {
   id: string;
   title: string;
   description: string;
-  /** Icono SVG subido a Content Island (se inserta en línea y toma el color del tema) */
+  /** SVG icon uploaded to Content Island (inlined, takes the theme color) */
   icon: Media;
   image: Media;
   imageAlt: string;
@@ -160,7 +160,7 @@ export interface WhyItem {
   id: string;
   title: string;
   text: string;
-  /** Icono SVG subido a Content Island */
+  /** SVG icon uploaded to Content Island */
   icon: Media;
   language: LanguageCode;
 }
@@ -192,7 +192,7 @@ export interface ProcessStep {
   language: LanguageCode;
 }
 
-/** Banner con foto de fondo y panel translúcido (Figma: CTA Asesoramiento) */
+/** Banner with background photo and translucent panel (Figma: CTA Asesoramiento) */
 export interface CtaBanner {
   id: string;
   title: string;
@@ -220,23 +220,23 @@ export interface FaqItem {
 }
 
 /**
- * Artículo / noticia. Si no hay ninguno publicado, la sección de la home,
- * el enlace del menú y las páginas /articulos no se generan.
+ * Article / news item. If none are published, the home section,
+ * the menu link and the /articulos pages are not generated.
  */
 export interface Article {
   id: string;
   order?: number;
   slug: string;
   category: string;
-  /** Referencia legal que se usa como portada tipográfica (p. ej. "Art. 92") */
+  /** Legal reference used as the typographic cover (e.g. "Art. 92") */
   reference: string;
   date: string; // ISO 8601
   readingTime: string;
   title: string;
   excerpt: string;
-  /** Cuerpo en markdown */
+  /** Body in markdown */
   body: string;
-  /** Opcional. Sin imagen se pinta la portada tipográfica con un color del tema que alterna según la posición */
+  /** Optional. Without an image, a typographic cover is drawn in a theme color that alternates by position */
   coverImage?: Media;
   coverImageAlt?: string;
   language: LanguageCode;
@@ -274,7 +274,7 @@ export interface ContactSection {
 export interface FooterColumn {
   id: string;
   title: string;
-  /** La API no resuelve relaciones de segundo nivel: llegan como ids y getFooter() las sustituye */
+  /** The API doesn't resolve second-level relations: they arrive as ids and getFooter() replaces them */
   links: NavigationItem[];
 }
 
@@ -299,7 +299,7 @@ export interface CookieBanner {
   language: LanguageCode;
 }
 
-/** Textos de interfaz (etiquetas de formulario, accesibilidad, enlaces fijos). 1 entrada por idioma */
+/** UI strings (form labels, accessibility, fixed links). 1 entry per language */
 export interface UiText {
   id: string;
   barNumberPrefix: string;
@@ -329,13 +329,13 @@ export interface UiText {
   footerOfficeTitle: string;
   footerBookLabel: string;
   whatsappLabel: string;
-  /** Accesibilidad del selector de idioma */
+  /** Language switcher accessibility */
   languageLabel: string;
-  /** Etiqueta del NIF en el pie («NIF» / «Tax ID»): se pinta junto a Settings.taxId */
+  /** Tax ID label in the footer («NIF» / «Tax ID»): shown next to Settings.taxId */
   taxIdLabel: string;
-  /** «desde» / «since»: línea de colegiación de «Sobre mí» (Settings.barNumber + barSince) */
+  /** «desde» / «since»: bar membership line in «About me» (Settings.barNumber + barSince) */
   barSinceLabel: string;
-  /** «Última actualización» / «Last updated»: fecha de las páginas legales (Cookies/PrivacyPolicy.lastUpdate) */
+  /** «Última actualización» / «Last updated»: legal pages date (Cookies/PrivacyPolicy.lastUpdate) */
   legalUpdatedLabel: string;
   language: LanguageCode;
 }
@@ -349,9 +349,9 @@ export interface LegalPage {
 }
 
 /**
- * Página principal: agrupa todas las secciones de la home (relaciones en Content Island).
- * Las listas salen en el orden en que estén en la relación. Opiniones, FAQ y cabecera de artículos son opcionales:
- * si faltan, esa sección no se muestra.
+ * Home page: groups all home sections (relations in Content Island).
+ * Lists follow the order of the relation. Reviews, FAQ and the articles header are optional:
+ * if missing, that section is not shown.
  */
 export interface LawyerPage {
   id: string;

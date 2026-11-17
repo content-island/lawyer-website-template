@@ -12,7 +12,7 @@ interface Props {
 const { lang } = Astro.props;
 const [footer, settings, ui, general, header] = await Promise.all([getFooter(lang), getSettings(lang), getUiText(lang), getGeneral(lang), getHeader(lang)]);
 
-// URLs de Content Island con el prefijo del idioma: "/#areas" -> "/es/#areas" (o "/#areas" en el idioma inicial)
+// Content Island URLs with the language prefix: "/#areas" -> "/es/#areas" (or "/#areas" in the default language)
 const toHref = (url: string) => routes.fromCms(lang, url);
 const legal = [...(footer.legalLinks ?? []), footer.privacyPolicy, footer.cookies];
 const link = 'no-underline transition-colors hover:text-on-ink';

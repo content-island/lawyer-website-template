@@ -1,5 +1,5 @@
 ---
-/** Banner "¿Necesitas asesoramiento legal?" con foto de fondo (Figma: CTA Asesoramiento). */
+/** "¿Necesitas asesoramiento legal?" banner with background photo (Figma: CTA Asesoramiento). */
 import type { LanguageCode } from '@content-island/api-client';
 import { getLawyerPage } from '@layouts/api';
 
@@ -11,7 +11,7 @@ const { lang, contactSectionId } = Astro.props;
 const { cta } = await getLawyerPage(lang);
 ---
 
-<!-- Al entrar en pantalla (.is-in): la foto se asienta con un zoom lento y la línea azul se dibuja -->
+<!-- On entering the viewport (.is-in): the photo settles with a slow zoom and the blue line draws in -->
 <section class="group relative flex min-h-[720px] items-center overflow-hidden max-sm:min-h-[640px]" aria-labelledby="cta-title" data-cta>
   <img
     class="ease-soft absolute inset-0 size-full scale-[1.08] object-cover transition-transform duration-[2400ms] group-[.is-in]:scale-100 max-sm:object-[78%_50%] motion-reduce:scale-100"

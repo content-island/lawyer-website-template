@@ -1,20 +1,14 @@
 ---
-/**
- * Logo (Figma: Logo). La marca sale de General.logo (SVG subido a Content Island): se inserta en línea y toma el
- * color del texto, así sirve en claro y en oscuro. Si no hay logo, se dibuja un monograma con las iniciales del nombre.
- * tone="dark" sobre fondos claros, "light" sobre tinta.
- */
 import type { Media } from '@models/index';
 import { loadSvgLogo } from '@core/helpers';
 
 interface Props {
-  /** General.logo (opcional) */
   logo?: Media;
   name: string;
   role: string;
   tone?: 'dark' | 'light';
   href: string;
-  /** Texto accesible del enlace a la página de inicio (UiText.logoHomeLabel) */
+  /** Accessible text for the home page link (UiText.logoHomeLabel) */
   homeLabel: string;
 }
 const { logo, name, role, tone = 'dark', href, homeLabel } = Astro.props;
