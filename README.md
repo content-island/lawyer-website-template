@@ -14,6 +14,10 @@ The **default language** (the first one in the project's language list in Conten
 
 If a language is removed or the order changes in Content Island, the routes update on the next build.
 
+### Before changing content or languages
+- **Content changes need a new build.** The site is static HTML: anything published or edited in Content Island (texts, articles, languages) doesn't show up until the site is rebuilt and deployed (`npm run build`). This can be done by hand or automated with a Content Island webhook that triggers the deploy.
+- **The first language goes at the root (`/`).** Adding a language at the end of the list is safe. Reordering or removing languages changes the URLs on the next build: the new ones are generated automatically, but the old URLs that Google already indexed will return 404. For those, it's worth setting up **301 redirects** on the hosting, so links and search rankings aren't lost.
+
 ## Content: Content Island
 All the content (ES/EN texts, images, SVG icons, logo, favicon, theme colors and fonts) comes from the **Content Island** project created from this template.
 The site uses the read-only token in `.env` (`CONTENT_ISLAND_ACCESS_TOKEN`, see `.env-sample`). `npm run dev` creates `.env` from `.env-sample` if it doesn't exist.
