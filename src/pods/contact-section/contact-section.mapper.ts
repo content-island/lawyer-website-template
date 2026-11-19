@@ -1,9 +1,25 @@
 import type { LanguageCode } from '@content-island/api-client';
 import { renderEmphasis, resolveRelated } from '@common/helpers';
 import { sectionIdFromUrl, type Routes } from '@common/routing';
-import type { ContactSectionApiData } from './api/contact-section.api-model';
-import type { ContactFormVm, ContactVm } from './contact-section.model';
+import type { ContactSectionApiData, UiText } from './api/contact-section.api-model';
+import type { ContactFormMessages, ContactFormVm, ContactVm } from './contact-section.model';
 import { buildContactDetails } from './contact-section.business';
+
+const mapMessages = (ui: UiText): ContactFormMessages => ({
+  errors: {
+    required: ui.formRequiredError,
+    email: ui.formEmailError,
+    phone: ui.formPhoneError,
+    tooLong: ui.formTooLongError,
+    invalidChars: ui.formInvalidCharsError || ui.formErrorMessage,
+    // Only fails if someone tampers with the select: the general message is enough
+    subject: ui.formErrorMessage,
+    consent: ui.formConsentError,
+  },
+  error: ui.formErrorMessage,
+  success: ui.formSuccessMessage,
+  providerMissing: ui.formProviderMissingMessage,
+});
 
 const mapForm = ({ page: { contact }, cvEntries, ui, footer }: ContactSectionApiData, lang: LanguageCode, routes: Routes): ContactFormVm => ({
   title: contact.formTitle,
@@ -23,8 +39,7 @@ const mapForm = ({ page: { contact }, cvEntries, ui, footer }: ContactSectionApi
   privacyLink: { label: ui.formPrivacyLinkLabel, href: routes.fromCms(lang, footer.privacyPolicy.url) },
   submitLabel: contact.submitLabel,
   responseTime: contact.responseTime,
-  errorMessage: ui.formErrorMessage,
-  successMessage: ui.formSuccessMessage,
+  messages: mapMessages(ui),
 });
 
 export const mapToContactVm = (data: ContactSectionApiData, lang: LanguageCode, routes: Routes): ContactVm => ({

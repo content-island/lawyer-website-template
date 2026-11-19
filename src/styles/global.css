@@ -217,6 +217,24 @@
   .field textarea {
     @apply min-h-[110px] resize-y;
   }
+  .field [aria-invalid='true'] {
+    @apply border-accent-hover outline-accent-hover;
+  }
+  /* Native checkboxes ignore border-color: mark them with an outline instead */
+  .check input[aria-invalid='true'] {
+    @apply outline-accent-hover outline-2 outline-offset-2;
+  }
+  /* Required field: the asterisk is decorative, the input's `required` attribute is what screen readers announce */
+  .required-mark {
+    @apply text-accent-hover ml-0.5;
+  }
+  /* Error under a field (contact-form.client.ts) */
+  .field-error {
+    @apply text-accent-hover text-[13px] font-semibold empty:hidden;
+  }
+  .check + .field-error {
+    @apply mt-1.5;
+  }
 
   /* Figma: Checkbox */
   .check {

@@ -28,4 +28,27 @@ describe('mapToContactVm', () => {
     expect(vm.form.privacyLink).toEqual({ label: 'política de privacidad', href: '/es/politica-de-privacidad' });
     expect(vm.form.subjects).toEqual(['Divorcio', 'Herencias']);
   });
+
+  it('takes the form messages from UiText', () => {
+    expect(vm.form.messages).toEqual({
+      errors: {
+        required: 'Obligatorio',
+        email: 'Correo',
+        phone: 'Teléfono',
+        tooLong: 'Largo',
+        invalidChars: 'Error',
+        subject: 'Error',
+        consent: 'Consentimiento',
+      },
+      error: 'Error',
+      success: 'OK',
+      providerMissing: 'Configura tu proveedor',
+    });
+  });
+
+  it('uses formInvalidCharsError when it exists in Content Island', () => {
+    const data = contactData();
+    data.ui = { ...data.ui, formInvalidCharsError: 'Caracteres no permitidos' };
+    expect(mapToContactVm(data, 'es', createRoutes('en')).form.messages.errors.invalidChars).toBe('Caracteres no permitidos');
+  });
 });
