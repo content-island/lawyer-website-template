@@ -1,0 +1,21 @@
+---
+/** SVG icon uploaded to Content Island, inlined so it takes the theme color (falls back to <img>) */
+import { loadSvgIcon } from '@common/helpers';
+
+interface Props {
+  url: string;
+  size?: number;
+  class?: string;
+}
+
+const { url, size = 24, class: className } = Astro.props;
+const svg = await loadSvgIcon(url);
+---
+
+{
+  svg ? (
+    <svg class={className} width={size} height={size} viewBox={svg.viewBox} aria-hidden="true" {...svg.attributes} set:html={svg.body} />
+  ) : (
+    <img class={className} src={url} width={size} height={size} alt="" aria-hidden="true" loading="lazy" />
+  )
+}

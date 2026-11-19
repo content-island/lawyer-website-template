@@ -1,0 +1,33 @@
+---
+/**
+ * Geometric style (desktop): 3×3 grid where the portrait takes 2×2 and the rest are pattern tiles.
+ * Same columns as classic; the mosaic is shorter than the portrait, so it's vertically centered against the text.
+ */
+import { GeoTile, type GeoMotif } from '@common/components';
+import type { HeroVm } from '../hero-section.model';
+
+interface Props {
+  hero: HeroVm;
+}
+const { hero } = Astro.props;
+const tiles: GeoMotif[] = ['comb', 'pinwheel', 'star', 'rounded-quarter', 'half-moon'];
+---
+
+<figure class="col-[8/13] m-0 self-center pb-[clamp(40px,6vw,88px)] max-tab:hidden">
+  <div class="grid grid-cols-3 gap-1.5" data-reveal-group="90">
+    <div class="bg-placeholder col-span-2 row-span-2 overflow-hidden" data-reveal="zoom">
+      <img class="aspect-square size-full object-cover" src={hero.portrait.url} alt={hero.portrait.alt} width="1024" height="1280" loading="eager" fetchpriority="high" />
+    </div>
+    {
+      tiles.map(motif => (
+        <div class="aspect-square" data-reveal="zoom">
+          <GeoTile motif={motif} class="size-full" />
+        </div>
+      ))
+    }
+  </div>
+  <figcaption class="border-ink text-ink-soft mt-3.5 flex justify-between gap-3 border-t pt-3.5 text-[13px]">
+    <span>{hero.caption.name}</span>
+    <span>{hero.caption.text}</span>
+  </figcaption>
+</figure>

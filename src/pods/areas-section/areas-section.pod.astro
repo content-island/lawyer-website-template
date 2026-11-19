@@ -1,0 +1,22 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { SectionHead } from '@common/components';
+import { getAreasSection } from './api/areas-section.api';
+import { mapToAreasVm } from './areas-section.mapper';
+import AreaCard from './components/area-card.astro';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const areas = mapToAreasVm(await getAreasSection(lang));
+---
+
+<section class="section" id={areas.id}>
+  <div class="wrap">
+    <SectionHead head={areas.head} />
+    <div class="grid grid-cols-3 gap-7 max-xl:grid-cols-2 max-sm:grid-cols-1 max-sm:gap-5" data-reveal-group="90">
+      {areas.items.map(area => <AreaCard area={area} />)}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+import type { HeroVm } from '../hero-section.model';
+
+interface Props {
+  hero: HeroVm;
+}
+const { hero } = Astro.props;
+---
+
+<div class="col-[1/8] pb-[clamp(40px,6vw,88px)] max-tab:relative max-tab:z-2 max-tab:col-span-full max-tab:pb-10" data-reveal-group="110">
+  <p class="eyebrow max-tab:text-accent-light max-tab:text-[12px]" data-reveal>{hero.eyebrow}</p>
+  <h1
+    class="font-display mt-[22px] mb-[26px] text-[clamp(42px,5.6vw,74px)] leading-[1.04] tracking-[-0.015em] max-tab:mt-3.5 max-tab:mb-4 max-tab:text-[42px] max-tab:leading-[1.06]"
+    data-reveal
+    set:html={hero.titleHtml}
+  />
+  {/* 54ch: the first line ends at «cómo» and the paragraph stays clear of the portrait */}
+  <p class="lead tab:max-w-[54ch] max-tab:text-on-ink/85 max-tab:font-body mb-[34px] max-tab:mb-6 max-tab:text-[16px] max-tab:leading-[1.6]" data-reveal>
+    {hero.subtitle}
+  </p>
+  <div class="flex flex-wrap gap-3.5 max-tab:flex-col max-tab:gap-3" data-reveal>
+    <a class="btn btn--solid max-tab:w-full" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+    <a
+      class="btn btn--line max-tab:text-on-ink max-tab:border-on-ink max-tab:hover:bg-on-ink max-tab:hover:text-ink max-tab:w-full"
+      href={hero.secondaryCta.href}
+      target="_blank"
+      rel="noopener noreferrer">{hero.secondaryCta.label}</a
+    >
+  </div>
+</div>

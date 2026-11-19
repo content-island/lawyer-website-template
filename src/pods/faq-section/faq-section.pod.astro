@@ -1,0 +1,39 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { getFaqSection } from './api/faq-section.api';
+import { mapToFaqVm } from './faq-section.mapper';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const faq = mapToFaqVm(await getFaqSection(lang), lang);
+---
+
+{
+  faq && (
+    <section class="section" id={faq.id}>
+      <div class="wrap grid-12">
+        <div class="col-[1/5] max-lg:col-span-full">
+          <p class="eyebrow" data-reveal>{faq.head.eyebrow}</p>
+          <h2 class="h2 mt-4" data-reveal="up" style="--reveal-delay:80ms" set:html={faq.head.titleHtml} />
+          {faq.head.lead && <p class="lead mt-[18px]" data-reveal="up" style="--reveal-delay:160ms">{faq.head.lead}</p>}
+        </div>
+        <div class="border-ink col-[6/13] border-t max-lg:col-span-full max-lg:mt-6" data-reveal-group="80">
+          {
+            faq.items.map((item, i) => (
+              <details open={i === 0} class="group border-rule border-b" data-reveal="right">
+                <summary class="font-title hover:text-accent after:font-body after:text-accent after:ease-soft flex cursor-pointer list-none justify-between gap-6 py-[22px] text-[20px] leading-[1.35] transition-colors after:flex-none after:text-[24px] after:leading-none after:transition-transform after:duration-350 after:content-['+'] group-open:after:rotate-45 max-lg:text-[18px] [&::-webkit-details-marker]:hidden">
+                  {item.question}
+                </summary>
+                <div class="text-ink-soft group-open:animate-faq-open max-w-[62ch] pb-6">
+                  <p>{item.answer}</p>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  )
+}

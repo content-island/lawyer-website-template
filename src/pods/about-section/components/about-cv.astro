@@ -1,0 +1,33 @@
+---
+/** CV aside: education and memberships */
+import type { CvGroupVm } from '../about-section.model';
+
+interface Props {
+  label: string;
+  groups: CvGroupVm[];
+}
+const { label, groups } = Astro.props;
+---
+
+<aside
+  class="border-rule col-[10/13] self-start border-l pl-6 max-xl:col-span-full max-xl:grid max-xl:grid-cols-2 max-xl:gap-6 max-xl:border-t max-xl:border-l-0 max-xl:pt-7 max-xl:pl-0 max-sm:grid-cols-1"
+  aria-label={label}
+  data-reveal="right"
+  style="--reveal-delay:200ms"
+>
+  {
+    groups.map(group => (
+      <div>
+        <h3 class="font-body text-ink-soft mb-3.5 text-[12.5px] font-semibold tracking-[0.16em] uppercase">{group.title}</h3>
+        <dl class="mt-0 mb-[30px]">
+          {group.items.map(item => (
+            <>
+              <dt class="font-title text-[16px] leading-[1.35]">{item.title}</dt>
+              <dd class="text-ink-soft mx-0 mt-0.5 mb-3.5 text-[13.5px]">{item.detail}</dd>
+            </>
+          ))}
+        </dl>
+      </div>
+    ))
+  }
+</aside>

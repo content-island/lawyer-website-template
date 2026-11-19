@@ -1,0 +1,35 @@
+---
+import type { LinkVm } from '../header.model';
+
+interface Props {
+  label: string;
+  links: LinkVm[];
+  /** Call to action, only shown inside the mobile menu */
+  cta: LinkVm;
+}
+const { label, links, cta } = Astro.props;
+---
+
+<nav
+  class="max-xl:bg-page max-xl:border-rule ease-soft max-xl:invisible max-xl:absolute max-xl:inset-x-0 max-xl:top-full max-xl:flex max-xl:-translate-y-2 max-xl:flex-col max-xl:gap-4 max-xl:border-b max-xl:px-[clamp(20px,4vw,40px)] max-xl:pt-3 max-xl:pb-6 max-xl:opacity-0 max-xl:transition-[transform,opacity,visibility] max-xl:duration-300 max-xl:[&.active]:visible max-xl:[&.active]:translate-y-0 max-xl:[&.active]:opacity-100"
+  id="nav"
+  aria-label={label}
+  data-mobile-menu
+>
+  <ul class="m-0 flex list-none gap-6 p-0 max-xl:flex-col max-xl:gap-1">
+    {
+      links.map(link => (
+        <li>
+          <a
+            href={link.href}
+            data-menu-close
+            class="after:bg-accent after:ease-soft relative py-1.5 text-[15px] font-medium whitespace-nowrap no-underline after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:scale-x-0 after:transition-transform after:duration-350 hover:after:scale-x-100 max-xl:block max-xl:py-3 max-xl:text-[17px]"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <a class="btn btn--solid hidden self-stretch max-xl:inline-flex" href={cta.href} data-menu-close>{cta.label}</a>
+</nav>

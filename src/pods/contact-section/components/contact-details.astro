@@ -1,0 +1,32 @@
+---
+import type { ContactDetailVm } from '../contact-section.model';
+
+interface Props {
+  details: ContactDetailVm[];
+}
+const { details } = Astro.props;
+---
+
+<dl class="mt-9 mb-0 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3.5 text-[15.5px] max-sm:grid-cols-1 max-sm:gap-1" data-reveal style="--reveal-delay:240ms">
+  {
+    details.map(detail => (
+      <>
+        <dt class="text-muted-inverse pt-[3px] text-[12.5px] font-semibold tracking-[0.14em] uppercase">{detail.label}</dt>
+        {detail.kind === 'text' ? (
+          <dd class="m-0 max-sm:mb-3" set:html={detail.html} />
+        ) : (
+          <dd class="m-0 max-sm:mb-3">
+            <a
+              class="border-on-ink/35 hover:border-on-ink border-b no-underline transition-colors"
+              href={detail.href}
+              target={detail.external ? '_blank' : undefined}
+              rel={detail.external ? 'noopener noreferrer' : undefined}
+            >
+              {detail.text}
+            </a>
+          </dd>
+        )}
+      </>
+    ))
+  }
+</dl>

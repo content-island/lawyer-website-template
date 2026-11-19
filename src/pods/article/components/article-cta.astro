@@ -1,0 +1,14 @@
+---
+import type { ArticleCtaVm } from '../detail/article-detail.model';
+
+interface Props {
+  cta: ArticleCtaVm;
+}
+const { cta } = Astro.props;
+---
+
+<aside class="bg-subtle border-accent mt-14 border-t-3 p-8 max-sm:p-6" data-reveal="up">
+  <h2 class="font-title text-[24px]">{cta.title}</h2>
+  <p class="text-ink-soft mt-2 mb-6">{cta.text}</p>
+  <a class="btn btn--solid max-sm:w-full" href={cta.href}>{cta.label}</a>
+</aside>

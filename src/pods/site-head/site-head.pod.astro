@@ -1,0 +1,25 @@
+---
+/** Document-level <head> tags shared by every page: favicon, theme fonts and theme colors */
+import type { LanguageCode } from '@content-island/api-client';
+import { getGeneral, getTheme } from './api/site-head.api';
+import { mapToSiteHeadVm } from './site-head.mapper';
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const [theme, general] = await Promise.all([getTheme(lang), getGeneral(lang)]);
+const vm = mapToSiteHeadVm(theme, general);
+---
+
+<meta name="generator" content={Astro.generator} />
+<link rel="icon" href={vm.faviconUrl} />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+{vm.fontUrls.map(url => <link href={url} rel="stylesheet" />)}
+<Fragment set:html={`<style>${vm.themeCss}</style>`} />
+
+<!-- Enables entrance animations only when JS is available (without JS the content looks the same) -->
+<script is:inline>document.documentElement.classList.add('js');</script>

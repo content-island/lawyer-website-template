@@ -1,0 +1,22 @@
+---
+import type { TopBarVm } from '../header.model';
+
+interface Props {
+  topBar: TopBarVm;
+}
+const { topBar } = Astro.props;
+---
+
+<div class="bg-ink text-on-ink/80 text-[13.5px] max-sm:text-[12.5px]">
+  <div class="wrap flex min-h-[42px] flex-wrap items-center justify-between gap-4">
+    <span class="tracking-[0.04em]"
+      >{topBar.barNumber} · <span class="max-sm:hidden">{topBar.barAssociation}</span><span class="sm:hidden"
+        >{topBar.barAssociationShort}</span
+      ></span
+    >
+    <div class="flex gap-[22px] max-sm:hidden">
+      <span>{topBar.schedule}</span>
+      <a class="text-on-ink no-underline" href={`mailto:${topBar.email}`}>{topBar.email}</a>
+    </div>
+  </div>
+</div>

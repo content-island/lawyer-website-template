@@ -1,0 +1,16 @@
+---
+import type { SectionHeadVm } from '@common/models';
+
+interface Props {
+  head: SectionHeadVm;
+}
+const { head } = Astro.props;
+---
+
+<div class="grid-12 mb-[clamp(40px,5vw,64px)]">
+  <p class="eyebrow col-[1/4] pt-3 max-tab:col-span-full max-tab:pt-0" data-reveal>{head.eyebrow}</p>
+  <div class="col-[4/11] flex flex-col gap-[18px] max-tab:col-span-full">
+    <h2 class="h2" data-reveal="up" style="--reveal-delay:80ms" set:html={head.titleHtml} />
+    {head.lead && <p class="lead" data-reveal="up" style="--reveal-delay:160ms">{head.lead}</p>}
+  </div>
+</div>

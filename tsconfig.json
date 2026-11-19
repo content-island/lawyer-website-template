@@ -3,16 +3,11 @@
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@components/*": ["src/common/components/*"],
-      "@models/*": ["src/common/models/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@pods/*": ["src/pods/*"],
-      "@lib/*": ["src/lib/*"],
-      "@core/*": ["src/core/*"],
-      "@common/*": ["src/common/*"]
+      "@/*": ["./src/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pods/*": ["./src/pods/*"],
+      "@common/*": ["./src/common/*"]
     }
   }
 }

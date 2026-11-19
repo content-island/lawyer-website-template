@@ -1,0 +1,21 @@
+---
+/**
+ * Language switcher. Each option leads to the SAME page in that language.
+ *   1 language   → hidden
+ *   2 languages  → toggle (see language-toggle.astro)
+ *   3 or more    → dropdown (see language-dropdown.astro)
+ * The order follows Content Island (Languages).
+ */
+import type { LanguageSwitcherVm } from '../header.model';
+import LanguageToggle from './language-toggle.astro';
+import LanguageDropdown from './language-dropdown.astro';
+
+interface Props {
+  switcher: LanguageSwitcherVm;
+}
+const { switcher } = Astro.props;
+const current = switcher.options.find(option => option.current);
+---
+
+{switcher.options.length === 2 && <LanguageToggle switcher={switcher} />}
+{switcher.options.length > 2 && current && <LanguageDropdown switcher={switcher} current={current} />}
