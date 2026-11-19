@@ -1,0 +1,56 @@
+import type { ContactSectionApiData } from './api/contact-section.api-model';
+
+const nav = (id: string, url: string) => ({ id, label: id, url });
+
+export const contactData = (): ContactSectionApiData => ({
+  page: {
+    id: 'p',
+    contact: {
+      id: 'ct',
+      eyebrow: 'Contacto',
+      title: 'Hablemos *hoy*',
+      lead: 'Lead',
+      formTitle: 'Form',
+      formSubtitle: 'Sub',
+      subjects: ['Divorcio', 'Herencias'],
+      gdpr: ['cv1', 'unknown'],
+      consent: 'Acepto la',
+      submitLabel: 'Enviar',
+      responseTime: '24 h',
+    },
+    language: 'es',
+  },
+  cvEntries: [{ id: 'cv1', title: 'Responsable', detail: 'Clara Ríos' }],
+  settings: {
+    id: 's',
+    phone: '+34 961',
+    phoneHref: 'tel:+34961',
+    whatsapp: '+34 600',
+    whatsappHref: 'https://wa.me/34600',
+    email: 'a@b.es',
+    address: 'Calle 1\nValencia',
+    schedule: 'L-V\n9-18',
+    language: 'es',
+  },
+  ui: {
+    id: 'u',
+    contactOfficeLabel: 'Despacho',
+    contactPhoneLabel: 'Teléfono',
+    contactWhatsappLabel: 'WhatsApp',
+    contactEmailLabel: 'Email',
+    contactScheduleLabel: 'Horario',
+    formNameLabel: 'Nombre',
+    formPhoneLabel: 'Teléfono',
+    formEmailLabel: 'Email',
+    formSubjectLabel: 'Asunto',
+    formMessageLabel: 'Mensaje',
+    formMessagePlaceholder: 'Cuéntame',
+    formGdprLabel: 'RGPD',
+    formPrivacyLinkLabel: 'política de privacidad',
+    formErrorMessage: 'Error',
+    formSuccessMessage: 'OK',
+    language: 'es',
+  },
+  header: { id: 'h', contact: nav('contact', '/#contacto'), language: 'es' },
+  footer: { id: 'f', privacyPolicy: nav('pp', '/politica-de-privacidad'), language: 'es' },
+});

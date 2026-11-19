@@ -1,0 +1,84 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Logo } from '@common/components';
+import { routes } from '@common/constants';
+import type { LanguageAlternate } from '@common/routing';
+import { getHeaderData } from './api/header.api';
+import { mapToHeaderVm } from './header.mapper';
+import TopBar from './components/top-bar.astro';
+import MainNav from './components/main-nav.astro';
+import LanguageSwitcher from './components/language-switcher.astro';
+
+interface Props {
+  lang: LanguageCode;
+  /** This page in each language (language switcher) */
+  alternates: LanguageAlternate[];
+  /** On the home page menu links are plain anchors (#areas) */
+  onHome: boolean;
+}
+
+const { lang, alternates, onHome } = Astro.props;
+const data = await getHeaderData(lang);
+const vm = mapToHeaderVm(data, alternates, { lang, routes, onHome });
+---
+
+<TopBar topBar={vm.topBar} />
+
+<header
+  class="border-rule bg-page/94 sticky top-0 z-50 border-b backdrop-blur-[8px] transition-shadow duration-300 [&.is-scrolled]:shadow-[0_10px_30px_-22px_color-mix(in_oklab,var(--color-ink)_45%,transparent)]"
+  data-header
+>
+  <div class="wrap flex min-h-[84px] items-center justify-between gap-6 max-sm:min-h-[68px]">
+    <Logo {...vm.logo} />
+    <MainNav label={vm.nav.label} links={vm.nav.links} cta={vm.cta} />
+
+    <div class="flex items-center gap-5 max-sm:gap-2.5">
+      <LanguageSwitcher switcher={vm.languageSwitcher} />
+      <a class="font-title text-[17px] whitespace-nowrap no-underline max-xl:hidden" href={vm.phone.href}>{vm.phone.label}</a>
+      <a class="btn btn--solid max-sm:hidden" href={vm.cta.href}>{vm.cta.label}</a>
+      <button
+        class="border-ink text-ink font-body hidden cursor-pointer rounded-md border bg-transparent px-3.5 py-2.5 text-[14px] font-semibold max-xl:inline-block"
+        type="button"
+        aria-controls="nav"
+        aria-expanded="false"
+        data-menu-toggle
+      >
+        {vm.menuLabel}
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  const header = document.querySelector<HTMLElement>('[data-header]');
+
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    menu?.classList.toggle('active', open);
+    document.body.classList.toggle('menu-open', open);
+  };
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  document.querySelectorAll('[data-menu-close]').forEach(link => link.addEventListener('click', () => setOpen(false)));
+
+  // Soft header shadow on scroll
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Smooth scroll with fixed header offset
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', event => {
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      event.preventDefault();
+      const offset = header?.offsetHeight ?? 0;
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+      history.pushState(null, '', href);
+    });
+  });
+</script>

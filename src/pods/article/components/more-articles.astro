@@ -1,0 +1,23 @@
+---
+import ArticleCard from './article-card.astro';
+import type { MoreArticlesVm } from '../detail/article-detail.model';
+
+interface Props {
+  more: MoreArticlesVm;
+}
+const { more } = Astro.props;
+---
+
+<section class="section">
+  <div class="wrap">
+    <div class="mb-10 flex items-end justify-between gap-6 max-sm:flex-col max-sm:items-start">
+      <h2 class="h2">{more.title}</h2>
+      <a class="btn btn--line" href={more.allLink.href}>
+        {more.allLink.label}
+      </a>
+    </div>
+    <div class="grid grid-cols-2 gap-9 max-sm:grid-cols-1 lg:grid-cols-3" data-reveal-group="120">
+      {more.cards.map(card => <ArticleCard article={card} />)}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+---
+import type { FooterColumnVm } from '../footer.model';
+
+interface Props {
+  column: FooterColumnVm;
+}
+const { column } = Astro.props;
+---
+
+<div>
+  <h4 class="text-on-ink mb-4 text-[12px] font-semibold tracking-[0.18em] uppercase">{column.title}</h4>
+  <ul class="m-0 grid list-none gap-[9px] p-0">
+    {
+      column.links.map(link => (
+        <li>
+          <a class="no-underline transition-colors hover:text-on-ink" href={link.href}>
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

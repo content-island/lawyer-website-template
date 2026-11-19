@@ -1,1 +1,1 @@
-export * from './content.model';
+export * from './section-head.model';

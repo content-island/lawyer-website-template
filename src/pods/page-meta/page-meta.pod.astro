@@ -1,0 +1,23 @@
+---
+/** Per-page <head> tags: title, description, Open Graph and hreflang alternates */
+import { DEFAULT_LANGUAGE } from '@common/constants';
+import type { SitePage } from '@common/routing';
+import { getPageMetaSource } from './api/page-meta.api';
+import { mapToPageMetaVm } from './page-meta.mapper';
+
+interface Props {
+  page: SitePage;
+}
+
+const { page } = Astro.props;
+const source = await getPageMetaSource(page.lang, page);
+const vm = mapToPageMetaVm(source, page.alternates, Astro.site, DEFAULT_LANGUAGE);
+---
+
+<meta name="description" content={vm.description} />
+<title>{vm.title}</title>
+{vm.hreflangLinks.map(link => <link rel="alternate" hreflang={link.hreflang} href={link.href} />)}
+<meta property="og:title" content={vm.title} />
+<meta property="og:description" content={vm.description} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={vm.siteName} />

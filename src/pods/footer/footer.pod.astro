@@ -1,0 +1,43 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { Logo } from '@common/components';
+import { routes } from '@common/constants';
+import { getFooterData } from './api/footer.api';
+import { mapToFooterVm } from './footer.mapper';
+import FooterColumn from './components/footer-column.astro';
+import FooterOffice from './components/footer-office.astro';
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const vm = mapToFooterVm(await getFooterData(lang), lang, routes);
+---
+
+<footer class="bg-footer text-footer-text pt-16 pb-7 text-[14.5px]" id="legal">
+  <div class="wrap">
+    <div class="grid grid-cols-[2fr_1fr_1fr_1.3fr] gap-10 border-b border-on-ink/14 pb-11 max-xl:grid-cols-2 max-sm:grid-cols-1 max-sm:gap-8">
+      <div>
+        <Logo {...vm.logo} tone="light" />
+        <p class="mt-5 max-w-[40ch] leading-[1.55]">{vm.deontology}</p>
+      </div>
+      {vm.columns.map(column => <FooterColumn column={column} />)}
+      <FooterOffice office={vm.office} />
+    </div>
+    <div class="flex flex-wrap justify-between gap-5 pt-6 text-[13px]">
+      <span>{vm.legalNotice}</span>
+      <ul class="m-0 flex list-none flex-wrap gap-[22px] p-0">
+        {
+          vm.legalLinks.map(link => (
+            <li>
+              <a class="no-underline transition-colors hover:text-on-ink" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

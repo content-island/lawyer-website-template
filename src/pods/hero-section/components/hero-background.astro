@@ -1,0 +1,28 @@
+---
+/** Desktop backgrounds: blurred shapes (classic) or a color band on the right (framed) */
+import type { HeroVariant } from '../api/hero-section.api-model';
+
+interface Props {
+  variant: HeroVariant;
+}
+const { variant } = Astro.props;
+const shape = 'absolute block';
+---
+
+{
+  variant === 'classic' && (
+    <div class="pointer-events-none absolute inset-0 max-tab:hidden" aria-hidden="true">
+      <span class={`${shape} bg-accent animate-blob top-[-240px] left-[52.8%] size-[780px] rounded-full opacity-16 blur-[75px]`} />
+      {/* The square rotates clockwise continuously and very slowly */}
+      <span class={`${shape} bg-accent animate-square-spin top-[460px] left-[73.6%] size-[420px] rounded-[48px] opacity-12 blur-[45px]`} />
+      <span class={`${shape} bg-accent animate-blob top-[560px] left-[-200px] size-[540px] rounded-full opacity-7 blur-[65px] [animation-delay:-7s]`} />
+      <span class={`${shape} border-accent top-[10px] left-[64.6%] size-[600px] rounded-full border-[1.5px] opacity-22`} />
+      <span class={`${shape} border-accent top-[700px] left-[38.9%] size-[140px] rounded-full border-[1.5px] opacity-25`} />
+      <span class={`${shape} border-accent animate-square-spin-slow top-[110px] left-[48.6%] size-24 border-[1.5px] opacity-22`} />
+      <span class={`${shape} bg-accent top-[640px] left-[90.3%] size-3.5 rounded-full opacity-45`} />
+      <span class={`${shape} inset-0 bg-[linear-gradient(90deg,var(--color-page)_0%,color-mix(in_oklab,var(--color-page)_90%,transparent)_38%,transparent_62%)]`} />
+      <span class={`${shape} to-page inset-x-0 bottom-0 h-[220px] bg-linear-to-b from-transparent`} />
+    </div>
+  )
+}
+{variant === 'framed' && <div class="bg-subtle pointer-events-none absolute inset-y-0 right-0 left-[69.4%] max-tab:hidden" aria-hidden="true" />}

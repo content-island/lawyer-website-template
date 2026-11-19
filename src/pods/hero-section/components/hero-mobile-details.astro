@@ -1,0 +1,30 @@
+---
+/** Mobile-only details: a strip of tiles (geometric) or a small hatched frame (framed) */
+import { GeoTile, type GeoMotif } from '@common/components';
+import type { HeroVariant } from '../api/hero-section.api-model';
+
+interface Props {
+  variant: HeroVariant;
+}
+const { variant } = Astro.props;
+const stripTiles: GeoMotif[] = ['star', 'rounded-quarter', 'comb', 'pinwheel', 'half-moon'];
+const shape = 'absolute block';
+---
+
+{
+  variant === 'geometric' && (
+    <div class="absolute inset-x-0 bottom-0 z-2 grid h-[79px] grid-cols-5 tab:hidden" aria-hidden="true">
+      {stripTiles.map(motif => (
+        <GeoTile motif={motif} class="size-full" />
+      ))}
+    </div>
+  )
+}
+{
+  variant === 'framed' && (
+    <div class="pointer-events-none absolute top-9 right-6 z-2 size-[96px] tab:hidden" aria-hidden="true">
+      <span class={`${shape} hatch-on-ink animate-hatch-drift inset-0 opacity-50`} />
+      <span class={`${shape} border-on-ink/60 top-[-10px] right-[10px] bottom-[10px] left-[-10px] border-[1.5px]`} />
+    </div>
+  )
+}

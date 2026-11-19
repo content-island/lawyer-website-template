@@ -1,0 +1,42 @@
+---
+/** Single article page (/articles/<slug>/ · /es/articulos/<slug>/). */
+import type { LanguageCode } from '@content-island/api-client';
+import { sanitizeHTMLWithMarked } from '@common/helpers';
+import { routes } from '@common/constants';
+import { getArticle, getArticles, getArticlesExtra, getHeader, getUiText } from '../api/article.api';
+import ArticleHero from '../components/article-hero.astro';
+import ArticleCta from '../components/article-cta.astro';
+import MoreArticles from '../components/more-articles.astro';
+import { mapToArticleDetailVm } from './article-detail.mapper';
+
+interface Props {
+  lang: LanguageCode;
+  slug: string;
+}
+const { lang, slug } = Astro.props;
+const [article, articles, extra, ui, header] = await Promise.all([
+  getArticle(lang, slug),
+  getArticles(lang),
+  getArticlesExtra(lang),
+  getUiText(lang),
+  getHeader(lang),
+]);
+const vm = mapToArticleDetailVm({ article, articles, extra, ui, header }, await sanitizeHTMLWithMarked(article.body), lang, routes);
+---
+
+<main>
+  <ArticleHero hero={vm.hero} />
+
+  <article class="wrap grid-12 py-[clamp(56px,7vw,96px)]">
+    <div class="col-[3/11] max-lg:col-span-full">
+      <p class="font-title text-ink text-[clamp(19px,1.8vw,22px)] leading-[1.6]" data-reveal>{vm.excerpt}</p>
+      <div
+        class="mt-10 text-[17px] leading-[1.75] [&_a]:text-accent [&_blockquote]:border-rule [&_blockquote]:text-ink-soft [&_h2]:font-title [&_li]:mb-2 [&_li]:marker:text-accent [&_ol]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-6 [&_strong]:font-semibold [&_ul]:mb-6 [&_ul]:list-disc [&_ul]:pl-6 [&_blockquote]:mt-10 [&_blockquote]:border-t [&_blockquote]:pt-5 [&_blockquote]:text-[14px] [&_blockquote]:italic [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:text-[28px] [&_h2]:leading-[1.2]"
+        set:html={vm.bodyHtml}
+      />
+      <ArticleCta cta={vm.cta} />
+    </div>
+  </article>
+
+  {vm.more.cards.length > 0 && <MoreArticles more={vm.more} />}
+</main>

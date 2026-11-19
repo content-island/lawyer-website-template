@@ -1,0 +1,42 @@
+---
+/**
+ * Two languages: toggle with a translate icon and both codes (current one highlighted).
+ * On mobile only the icon and the target language, so it fits next to the logo and menu.
+ */
+import type { LanguageSwitcherVm } from '../header.model';
+
+interface Props {
+  switcher: LanguageSwitcherVm;
+}
+const { switcher } = Astro.props;
+---
+
+<div
+  class="border-rule inline-flex items-center gap-1 rounded-full border py-1 pr-1 pl-2.5 text-[13px] font-semibold tracking-[0.06em] max-sm:gap-0 max-sm:pl-2"
+  role="group"
+  aria-label={switcher.label}
+>
+  <svg class="text-ink-soft mr-0.5 size-4 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path>
+  </svg>
+  {
+    switcher.options.map(option =>
+      option.current ? (
+        <span class="bg-ink text-on-ink rounded-full px-2.5 py-1 max-sm:hidden" aria-current="true" title={option.nativeName}>
+          {option.code}
+        </span>
+      ) : (
+        <a
+          class="text-ink-soft hover:text-accent rounded-full px-2.5 py-1 no-underline transition-colors"
+          href={option.url}
+          hreflang={option.lang}
+          lang={option.lang}
+          title={option.nativeName}
+          aria-label={option.nativeName}
+        >
+          {option.code}
+        </a>
+      ),
+    )
+  }
+</div>

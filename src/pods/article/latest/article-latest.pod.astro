@@ -1,0 +1,36 @@
+---
+/** Latest articles on the home page. If none are published, the section is not rendered. */
+import type { LanguageCode } from '@content-island/api-client';
+import { SectionHead } from '@common/components';
+import { routes } from '@common/constants';
+import { getArticles, getArticlesExtra, getHeader, getLawyerPage } from '../api/article.api';
+import ArticleCard from '../components/article-card.astro';
+import { mapToArticleLatestVm } from './article-latest.mapper';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const [articles, page, header] = await Promise.all([getArticles(lang), getLawyerPage(lang), getHeader(lang)]);
+// Articles are optional: their texts are only needed when there is at least one
+const extra = articles.length > 0 ? await getArticlesExtra(lang) : undefined;
+const latest = mapToArticleLatestVm({ head: page.articlesHead, articles, extra, header }, lang, routes);
+---
+
+{
+  latest && (
+    <section class="section" id={latest.id}>
+      <div class="wrap">
+        <SectionHead head={latest.head} />
+        <div class="grid grid-cols-3 gap-9 max-lg:grid-cols-2 max-sm:grid-cols-1" data-reveal-group="120">
+          {latest.cards.map(card => <ArticleCard article={card} />)}
+        </div>
+        <div class="mt-11 flex justify-end" data-reveal="right">
+          <a class="btn btn--line max-sm:w-full" href={latest.allLink.href}>
+            {latest.allLink.label}
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}

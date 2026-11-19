@@ -1,0 +1,23 @@
+---
+import type { ReviewVm } from '../reviews-section.model';
+
+interface Props {
+  review: ReviewVm;
+}
+const { review } = Astro.props;
+---
+
+<figure class="border-ink m-0 flex snap-start flex-col gap-5 border-t pt-6" data-reveal="right">
+  <span class="text-accent text-[14px] tracking-[3px]" aria-label={review.ratingLabel}>
+    {review.stars}
+  </span>
+  <blockquote
+    class="font-title before:text-accent m-0 text-[19px] leading-[1.55] before:mb-1.5 before:block before:text-[64px] before:leading-[0.6] before:content-['“']"
+  >
+    {review.quote}
+  </blockquote>
+  <figcaption class="text-ink-soft mt-auto text-[14px]">
+    <strong class="text-ink block font-semibold">{review.author}</strong>
+    {review.caseType}
+  </figcaption>
+</figure>

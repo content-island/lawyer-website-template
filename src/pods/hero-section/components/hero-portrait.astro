@@ -1,0 +1,42 @@
+---
+/** Portrait: on mobile it's always the background photo; on desktop only for the classic and framed styles */
+import type { HeroVm } from '../hero-section.model';
+
+interface Props {
+  hero: HeroVm;
+}
+const { hero } = Astro.props;
+const isFramed = hero.variant === 'framed';
+const shape = 'absolute block';
+---
+
+<figure
+  class:list={['col-[8/13] m-0 max-tab:absolute max-tab:inset-x-0 max-tab:top-0 max-tab:z-0 max-tab:h-[620px]', hero.variant === 'geometric' && 'tab:hidden']}
+  data-reveal="zoom"
+  style="--reveal-delay:200ms"
+>
+  <div class="relative max-tab:h-full">
+    <div
+      class:list={[
+        'bg-placeholder rounded-sm aspect-[4/5] overflow-hidden max-tab:aspect-auto max-tab:h-full max-tab:rounded-none',
+        isFramed && 'relative z-1',
+      ]}
+    >
+      <img class="size-full object-cover" src={hero.portrait.url} alt={hero.portrait.alt} width="1024" height="1280" loading="eager" fetchpriority="high" />
+    </div>
+    {
+      isFramed && (
+        <div class="pointer-events-none max-tab:hidden" aria-hidden="true">
+          {/* Fine diagonal hatch (like stamped paper) sliding very slowly, peeking out on the right */}
+          <span class={`${shape} hatch animate-hatch-drift top-[56px] right-[-72px] h-[62%] w-[78%] opacity-35`} />
+          {/* Line frame offset to the top left, with a marked corner */}
+          <span class={`${shape} border-accent top-[-28px] right-[28px] bottom-[28px] left-[-28px] border-[1.5px] opacity-45`} />
+          <span class={`${shape} bg-accent top-[-33px] left-[-33px] size-2.5`} />
+        </div>
+      )
+    }
+  </div>
+  <figcaption class="border-ink text-ink-soft mt-3.5 flex justify-between gap-3 border-t pt-3.5 text-[13px] max-tab:hidden">
+    <span>{hero.caption.name}</span><span>{hero.caption.text}</span>
+  </figcaption>
+</figure>

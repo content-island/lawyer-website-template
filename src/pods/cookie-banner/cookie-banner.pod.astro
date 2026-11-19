@@ -1,0 +1,73 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { routes } from '@common/constants';
+import { getCookieBanner, getFooter } from './api/cookie-banner.api';
+import { mapToCookieBannerVm } from './cookie-banner.mapper';
+
+interface Props {
+  lang: LanguageCode;
+}
+
+const { lang } = Astro.props;
+const [banner, footer] = await Promise.all([getCookieBanner(lang), getFooter(lang)]);
+const vm = mapToCookieBannerVm(banner, footer, lang, routes);
+---
+
+<div
+  id="cookie-banner"
+  class="bg-surface border-rule animate-cookie-in fixed inset-x-0 bottom-0 z-60 border-t py-5 shadow-[0_-12px_30px_-20px_color-mix(in_oklab,var(--color-ink)_40%,transparent)]"
+  role="dialog"
+  aria-live="polite"
+  aria-label={vm.title}
+  hidden
+>
+  <div class="wrap flex items-center justify-between gap-6 max-md:flex-col max-md:items-stretch">
+    <div>
+      <p class="font-title mb-1 text-[20px]">{vm.title}</p>
+      <p class="text-ink-soft text-[14px]">
+        {vm.description}
+        <a class="text-accent" href={vm.learnMore.href}>{vm.learnMore.label}</a>
+      </p>
+    </div>
+    <div class="flex flex-none gap-3 max-md:flex-col">
+      <button id="cookie-accept" type="button" class="btn btn--solid btn--sm">{vm.acceptAllLabel}</button>
+      <button id="cookie-reject" type="button" class="btn btn--line btn--sm">{vm.onlyEssentialLabel}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'cookie-consent';
+  const read = () => {
+    try {
+      return localStorage.getItem(KEY);
+    } catch {
+      return null;
+    }
+  };
+  const write = (value: string) => {
+    try {
+      localStorage.setItem(KEY, value);
+    } catch {
+      /* storage not available */
+    }
+  };
+
+  // EXAMPLE: load Google Analytics or other scripts here, only with consent.
+  const loadTrackingScripts = () => {};
+
+  const banner = document.getElementById('cookie-banner');
+  const consent = read();
+  if (consent === 'accepted') loadTrackingScripts();
+  if (!consent && banner) banner.hidden = false;
+
+  document.getElementById('cookie-accept')?.addEventListener('click', () => {
+    write('accepted');
+    if (banner) banner.hidden = true;
+    loadTrackingScripts();
+  });
+  document.getElementById('cookie-reject')?.addEventListener('click', () => {
+    write('rejected');
+    if (banner) banner.hidden = true;
+  });
+</script>

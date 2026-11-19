@@ -1,0 +1,26 @@
+---
+import type { LanguageCode } from '@content-island/api-client';
+import { routes } from '@common/constants';
+import { getContactSection } from './api/contact-section.api';
+import { mapToContactVm } from './contact-section.mapper';
+import ContactDetails from './components/contact-details.astro';
+import ContactForm from './components/contact-form.astro';
+
+interface Props {
+  lang: LanguageCode;
+}
+const { lang } = Astro.props;
+const contact = mapToContactVm(await getContactSection(lang), lang, routes);
+---
+
+<section class="section bg-ink text-on-ink border-t-0" id={contact.id}>
+  <div class="wrap grid-12">
+    <div class="col-[1/6] max-lg:col-span-full">
+      <p class="eyebrow text-accent-light" data-reveal>{contact.eyebrow}</p>
+      <h2 class="h2 mt-4 mb-[22px]" data-reveal="up" style="--reveal-delay:80ms" set:html={contact.titleHtml} />
+      <p class="lead text-on-ink/75" data-reveal="up" style="--reveal-delay:160ms">{contact.lead}</p>
+      <ContactDetails details={contact.details} />
+    </div>
+    <ContactForm form={contact.form} />
+  </div>
+</section>

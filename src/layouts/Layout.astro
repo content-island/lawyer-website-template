@@ -1,80 +1,33 @@
 ---
+/**
+ * Document shell. Pages put their own <head> tags in the "head" slot (see the page-meta pod).
+ * Composes the document-level pods: site head (favicon, fonts, theme), WhatsApp button and cookie banner.
+ */
 import type { LanguageCode } from '@content-island/api-client';
-import { getGeneral, getTheme, getPageMeta, getSettings, getUiText } from '@layouts/api';
-import CookieBanner from '@layouts/components/CookieBanner.astro';
-import WhatsAppFloat from '@layouts/components/WhatsAppFloat.astro';
-import { DEFAULT_LANGUAGE } from '@core/constants';
-import type { LanguageAlternate } from '@core/helpers';
+import SiteHeadPod from '@pods/site-head/site-head.pod.astro';
+import WhatsappFloatPod from '@pods/whatsapp-float/whatsapp-float.pod.astro';
+import CookieBannerPod from '@pods/cookie-banner/cookie-banner.pod.astro';
 import '@/styles/global.css';
 
 interface Props {
-  title?: string;
-  description?: string;
   lang: LanguageCode;
-  cookiesPageUrl: string;
-  /** This page in each language: <link rel="alternate" hreflang> */
-  alternates?: LanguageAlternate[];
 }
 
-const { lang, alternates = [] } = Astro.props;
-
-const [general, theme, pageMeta, settings, ui] = await Promise.all([
-  getGeneral(lang),
-  getTheme(lang),
-  getPageMeta(lang),
-  getSettings(lang),
-  getUiText(lang),
-]);
-
-// Dynamic CSS variables from the Content Island Theme (4 colors + 4 fonts).
-// The remaining colors are derived from these in global.css.
-const themeVariables = [
-  `--font-name-display: '${theme.fontDisplay.name}'`,
-  `--font-name-title: '${theme.fontTitle.name}'`,
-  `--font-name-body: '${theme.fontBody.name}'`,
-  `--font-name-signature: '${theme.fontSignature.name}'`,
-  `--color-primary: ${theme.colorPrimary}`,
-  `--color-secondary: ${theme.colorSecondary}`,
-  `--color-background: ${theme.colorBackground}`,
-  `--color-tertiary: ${theme.colorTertiary}`,
-].join('; ');
-
-const siteName = `${settings.lawyerName} · ${settings.role}`;
-const title = Astro.props.title ?? pageMeta.title;
-const description = Astro.props.description ?? pageMeta.description;
-const { cookiesPageUrl } = Astro.props;
-const fontUrls = [theme.fontDisplay, theme.fontTitle, theme.fontBody, theme.fontSignature].map(f => f.url);
+const { lang } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={lang} style={themeVariables}>
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <meta name="generator" content={Astro.generator} />
-    <link rel="icon" href={general.favIcon.url} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    {fontUrls.map(url => <link href={url} rel="stylesheet" />)}
-
-    <title>{title}</title>
-    {/* hreflang needs absolute URLs: only generated when a domain is set (`site` in astro.config.mjs) */}
-    {Astro.site && alternates.length > 1 && alternates.map(alt => <link rel="alternate" hreflang={alt.lang} href={new URL(alt.url, Astro.site).href} />)}
-    {Astro.site && alternates.length > 1 && <link rel="alternate" hreflang="x-default" href={new URL(alternates.find(a => a.lang === DEFAULT_LANGUAGE)?.url ?? '/', Astro.site).href} />}
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={siteName} />
-
-    <!-- Enables entrance animations only when JS is available (without JS the content looks the same) -->
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <SiteHeadPod lang={lang} />
+    <slot name="head" />
   </head>
   <body>
     <slot />
-    <WhatsAppFloat href={settings.whatsappHref} label={ui.whatsappLabel} />
-    <CookieBanner lang={lang} cookiesPageUrl={cookiesPageUrl} />
+    <WhatsappFloatPod lang={lang} />
+    <CookieBannerPod lang={lang} />
 
     <script>
       // Fade-in from the left when entering the viewport.
