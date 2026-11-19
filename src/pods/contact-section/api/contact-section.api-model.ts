@@ -58,6 +58,15 @@ export interface UiText {
   formPrivacyLinkLabel: string;
   formErrorMessage: string;
   formSuccessMessage: string;
+  formRequiredError: string;
+  formEmailError: string;
+  formPhoneError: string;
+  formTooLongError: string;
+  /** Optional until it exists in Content Island: falls back to formErrorMessage */
+  formInvalidCharsError?: string;
+  formConsentError: string;
+  /** Shown while no email provider is connected (see contact-form.provider.ts) */
+  formProviderMissingMessage: string;
   language: LanguageCode;
 }
 
