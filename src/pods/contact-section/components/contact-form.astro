@@ -1,27 +1,45 @@
 ---
-/** Intake form (front-end validation only: connect it to your form backend) */
+/** Intake form: validated with Zod (contact-form.schema.ts), sent through contact-form.provider.ts */
 import type { ContactFormVm } from '../contact-section.model';
+import type { ContactFormConfig } from '../contact-form.client';
+import FieldError from './field-error.astro';
 
 interface Props {
   form: ContactFormVm;
 }
 const { form } = Astro.props;
+const config: ContactFormConfig = { subjects: form.subjects, messages: form.messages };
+const errorId = (field: string) => `f-${field}-error`;
 ---
 
-<form class="bg-page text-ink col-[7/13] p-[clamp(22px,3.5vw,40px)] max-lg:col-span-full max-lg:mt-4" novalidate data-intake data-reveal="right" style="--reveal-delay:150ms">
+<form class="bg-page text-ink col-[7/13] p-[clamp(22px,3.5vw,40px)] max-lg:col-span-full max-lg:mt-4" novalidate data-intake data-config={JSON.stringify(config)} data-reveal="right" style="--reveal-delay:150ms">
   <h3 class="font-title mb-1.5 text-[24px]">{form.title}</h3>
   <p class="text-ink-soft mb-6 text-[14.5px]">{form.subtitle}</p>
   <div class="grid grid-cols-2 gap-[18px] max-sm:grid-cols-1">
-    <div class="field"><label for="f-name">{form.labels.name}</label><input id="f-name" name="name" autocomplete="name" required /></div>
-    <div class="field"><label for="f-phone">{form.labels.phone}</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" required /></div>
-    <div class="field"><label for="f-email">{form.labels.email}</label><input id="f-email" name="email" type="email" autocomplete="email" required /></div>
+    <div class="field">
+      <label for="f-name">{form.labels.name}<span class="required-mark" aria-hidden="true">*</span></label>
+      <input id="f-name" name="name" autocomplete="name" maxlength="100" required aria-describedby={errorId('name')} />
+      <FieldError field="name" />
+    </div>
+    <div class="field">
+      <label for="f-phone">{form.labels.phone}<span class="required-mark" aria-hidden="true">*</span></label>
+      <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="20" required aria-describedby={errorId('phone')} />
+      <FieldError field="phone" />
+    </div>
+    <div class="field">
+      <label for="f-email">{form.labels.email}<span class="required-mark" aria-hidden="true">*</span></label>
+      <input id="f-email" name="email" type="email" autocomplete="email" maxlength="254" required aria-describedby={errorId('email')} />
+      <FieldError field="email" />
+    </div>
     <div class="field">
       <label for="f-subject">{form.labels.subject}</label>
-      <select id="f-subject" name="subject">{form.subjects.map(subject => <option>{subject}</option>)}</select>
+      <select id="f-subject" name="subject" aria-describedby={errorId('subject')}>{form.subjects.map(subject => <option>{subject}</option>)}</select>
+      <FieldError field="subject" />
     </div>
     <div class="field col-span-full">
       <label for="f-message">{form.labels.message}</label>
-      <textarea id="f-message" name="message" placeholder={form.labels.messagePlaceholder}></textarea>
+      <textarea id="f-message" name="message" maxlength="2000" placeholder={form.labels.messagePlaceholder} aria-describedby={errorId('message')}></textarea>
+      <FieldError field="message" />
     </div>
   </div>
   <div class="border-rule bg-surface text-ink-soft mt-[18px] border p-3.5 text-[12.5px] leading-[1.5]" aria-label={form.labels.gdpr}>
@@ -39,30 +57,20 @@ const { form } = Astro.props;
     </table>
   </div>
   <label class="check mt-4" for="f-consent"
-    ><input type="checkbox" id="f-consent" name="consent" required /> <span
-      >{form.consent} <a class="text-accent" href={form.privacyLink.href}>{form.privacyLink.label}</a>.</span
+    ><input type="checkbox" id="f-consent" name="consent" required aria-describedby={errorId('consent')} /> <span
+      >{form.consent} <a class="text-accent" href={form.privacyLink.href}>{form.privacyLink.label}</a>.<span class="required-mark" aria-hidden="true">*</span></span
     ></label
   >
+  <FieldError field="consent" />
   <div class="mt-[22px] flex flex-wrap items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch max-sm:text-center">
     <button class="btn btn--solid" type="submit">{form.submitLabel}</button>
     <small class="text-ink-soft text-[13px]">{form.responseTime}</small>
   </div>
-  <p class="form-msg" role="status" aria-live="polite" data-intake-msg data-error={form.errorMessage} data-success={form.successMessage}></p>
+  <p class="form-msg" role="status" aria-live="polite" data-intake-msg></p>
 </form>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('[data-intake]');
-  const msg = document.querySelector<HTMLElement>('[data-intake-msg]');
-  form?.addEventListener('submit', event => {
-    event.preventDefault();
-    if (!msg) return;
-    if (!form.checkValidity()) {
-      msg.className = 'form-msg err';
-      msg.textContent = msg.dataset.error ?? '';
-      return;
-    }
-    msg.className = 'form-msg ok';
-    msg.textContent = msg.dataset.success ?? '';
-    form.reset();
-  });
+  import { setupContactForm } from '../contact-form.client';
+
+  document.querySelectorAll<HTMLFormElement>('[data-intake]').forEach(setupContactForm);
 </script>

@@ -1,0 +1,11 @@
+---
+/** Error message of a form field, filled by contact-form.client.ts. Its id matches the field's aria-describedby */
+import type { ContactFormField } from '../contact-form.schema';
+
+interface Props {
+  field: ContactFormField;
+}
+const { field } = Astro.props;
+---
+
+<p class="field-error" id={`f-${field}-error`} data-error-for={field} aria-live="polite"></p>

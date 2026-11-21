@@ -1,3 +1,5 @@
+import type { ContactFormErrorMessages } from './contact-form.schema';
+
 export interface LinkVm {
   label: string;
   href: string;
@@ -18,8 +20,17 @@ export interface ContactFormVm {
   privacyLink: LinkVm;
   submitLabel: string;
   responseTime: string;
-  errorMessage: string;
-  successMessage: string;
+  messages: ContactFormMessages;
+}
+
+export interface ContactFormMessages {
+  /** One per validation rule, shown under the field */
+  errors: ContactFormErrorMessages;
+  /** Summary when some field is invalid, or when sending fails */
+  error: string;
+  success: string;
+  /** While no email provider is connected */
+  providerMissing: string;
 }
 
 export interface ContactVm {
