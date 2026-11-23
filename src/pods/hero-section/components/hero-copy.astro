@@ -7,7 +7,14 @@ interface Props {
 const { hero } = Astro.props;
 ---
 
-<div class="col-[1/8] pb-[clamp(40px,6vw,88px)] max-tab:relative max-tab:z-2 max-tab:col-span-full max-tab:pb-10" data-reveal-group="110">
+<div
+  class:list={[
+    'col-[1/8] pb-[clamp(40px,6vw,88px)] max-tab:relative max-tab:z-2 max-tab:col-span-full max-tab:pb-10',
+    // Geometric: the text is vertically centered against the mosaic tiles (see hero-mosaic.astro)
+    hero.variant === 'geometric' && 'tab:self-center',
+  ]}
+  data-reveal-group="110"
+>
   <p class="eyebrow max-tab:text-accent-light max-tab:text-[12px]" data-reveal>{hero.eyebrow}</p>
   <h1
     class="font-display mt-[22px] mb-[26px] text-[clamp(42px,5.6vw,74px)] leading-[1.04] tracking-[-0.015em] max-tab:mt-3.5 max-tab:mb-4 max-tab:text-[42px] max-tab:leading-[1.06]"

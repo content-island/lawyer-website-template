@@ -1,7 +1,8 @@
 ---
 /**
  * Geometric style (desktop): 3×3 grid where the portrait takes 2×2 and the rest are pattern tiles.
- * Same columns as classic; the mosaic is shorter than the portrait, so it's vertically centered against the text.
+ * Same columns as classic. The text is vertically centered against the tiles only (Figma: Hero 3 · Geométrico):
+ * the caption hangs below them, out of the flow, so it doesn't shift the centering.
  */
 import { GeoTile, type GeoMotif } from '@common/components';
 import type { HeroVm } from '../hero-section.model';
@@ -13,7 +14,7 @@ const { hero } = Astro.props;
 const tiles: GeoMotif[] = ['comb', 'pinwheel', 'star', 'rounded-quarter', 'half-moon'];
 ---
 
-<figure class="col-[8/13] m-0 self-center pb-[clamp(40px,6vw,88px)] max-tab:hidden">
+<figure class="relative col-[8/13] m-0 self-center pb-[clamp(40px,6vw,88px)] max-tab:hidden">
   <div class="grid grid-cols-3 gap-1.5" data-reveal-group="90">
     <div class="bg-placeholder col-span-2 row-span-2 overflow-hidden" data-reveal="zoom">
       <img class="aspect-square size-full object-cover" src={hero.portrait.url} alt={hero.portrait.alt} width="1024" height="1280" loading="eager" fetchpriority="high" />
@@ -26,7 +27,7 @@ const tiles: GeoMotif[] = ['comb', 'pinwheel', 'star', 'rounded-quarter', 'half-
       ))
     }
   </div>
-  <figcaption class="border-ink text-ink-soft mt-3.5 flex justify-between gap-3 border-t pt-3.5 text-[13px]">
+  <figcaption class="border-ink text-ink-soft absolute inset-x-0 bottom-[clamp(40px,6vw,88px)] flex translate-y-[calc(100%+14px)] justify-between gap-3 border-t pt-3.5 text-[13px]">
     <span>{hero.caption.name}</span>
     <span>{hero.caption.text}</span>
   </figcaption>
