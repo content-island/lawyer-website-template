@@ -41,6 +41,7 @@ describe('mapToContactVm', () => {
         consent: 'Consentimiento',
       },
       error: 'Error',
+      fieldsError: 'Error',
       success: 'OK',
       providerMissing: 'Configura tu proveedor',
     });
@@ -50,5 +51,11 @@ describe('mapToContactVm', () => {
     const data = contactData();
     data.ui = { ...data.ui, formInvalidCharsError: 'Caracteres no permitidos' };
     expect(mapToContactVm(data, 'es', createRoutes('en')).form.messages.errors.invalidChars).toBe('Caracteres no permitidos');
+  });
+
+  it('uses formFieldsErrorMessage when it exists in Content Island', () => {
+    const data = contactData();
+    data.ui = { ...data.ui, formFieldsErrorMessage: 'Revisa los campos marcados' };
+    expect(mapToContactVm(data, 'es', createRoutes('en')).form.messages.fieldsError).toBe('Revisa los campos marcados');
   });
 });

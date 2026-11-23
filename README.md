@@ -37,7 +37,9 @@ What the visitor sees:
 
 | Situation | Message (UiText in Content Island) |
 |---|---|
-| Some field is invalid | Error under each field + `formErrorMessage` |
+| Some field is invalid and the privacy checkbox isn't checked | Error under each field + `formErrorMessage` |
+| Some field is invalid, the privacy checkbox is checked | Error under each field + `formFieldsErrorMessage` (it doesn't mention the checkbox) |
+| Only the privacy checkbox isn't checked | Error under the checkbox + `formConsentError` |
 | Valid, **no provider connected** (default) | `formProviderMissingMessage` ("Configura tu proveedor de email para recibir correos."), plus a note in the browser console |
 | Valid and sent | `formSuccessMessage` ("Hemos recibido su mensaje correctamente. Te responderemos lo antes posible."), and the form is cleared |
 
@@ -65,8 +67,9 @@ They come from **UiText** in Content Island, so they're translated like the rest
 | `formPhoneError` | The phone isn't valid |
 | `formTooLongError` | A text is too long |
 | `formInvalidCharsError` | The name or the message contains characters that aren't allowed |
-| `formConsentError` | The privacy checkbox isn't checked |
-| `formErrorMessage` | Summary above the button, and the error of a tampered subject |
+| `formConsentError` | The privacy checkbox isn't checked (under the checkbox, and as the summary when it's the only error) |
+| `formErrorMessage` | Summary under the button when fields and the privacy checkbox fail, and the error of a tampered subject |
+| `formFieldsErrorMessage` | Summary under the button when only fields fail (optional: falls back to `formErrorMessage`) |
 
 To add a field: add it to the form (`components/contact-form.astro`), to the schema and to `CONTACT_FORM_FIELDS` (`contact-form.schema.ts`), and add a test in `contact-form.schema.spec.ts`.
 

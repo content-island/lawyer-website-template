@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createContactFormSchema, firstErrorPerField, type ContactFormInput } from './contact-form.schema';
+import { createContactFormSchema, firstErrorPerField, summaryErrorMessage, type ContactFormInput } from './contact-form.schema';
 
 const messages = {
   required: 'required',
@@ -70,5 +70,22 @@ describe('contact form schema', () => {
 
   it('requires the privacy consent', () => {
     expect(errorsOf({ consent: false })).toEqual({ consent: 'consent' });
+  });
+});
+
+describe('summaryErrorMessage', () => {
+  const summary = { fieldsAndConsent: 'fields and consent', fields: 'fields', consent: 'consent only' };
+
+  it('mentions the privacy checkbox only when it is the only thing failing', () => {
+    expect(summaryErrorMessage(errorsOf({ consent: false }), summary)).toBe('consent only');
+  });
+
+  it("doesn't mention the privacy checkbox when it is checked and some field fails", () => {
+    expect(summaryErrorMessage(errorsOf({ phone: '' }), summary)).toBe('fields');
+    expect(summaryErrorMessage(errorsOf({ message: '<h1>XSS</h1>' }), summary)).toBe('fields');
+  });
+
+  it('mentions fields and checkbox when both fail', () => {
+    expect(summaryErrorMessage(errorsOf({ phone: '', consent: false }), summary)).toBe('fields and consent');
   });
 });

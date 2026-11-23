@@ -26,8 +26,10 @@ export interface ContactFormVm {
 export interface ContactFormMessages {
   /** One per validation rule, shown under the field */
   errors: ContactFormErrorMessages;
-  /** Summary when some field is invalid, or when sending fails */
+  /** Summary when fields and the privacy checkbox are invalid, or when sending fails */
   error: string;
+  /** Summary when only fields are invalid (the privacy checkbox is checked) */
+  fieldsError: string;
   success: string;
   /** While no email provider is connected */
   providerMissing: string;

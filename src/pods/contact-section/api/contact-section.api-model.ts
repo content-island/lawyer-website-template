@@ -57,6 +57,8 @@ export interface UiText {
   formGdprLabel: string;
   formPrivacyLinkLabel: string;
   formErrorMessage: string;
+  /** Optional until it exists in Content Island: falls back to formErrorMessage */
+  formFieldsErrorMessage?: string;
   formSuccessMessage: string;
   formRequiredError: string;
   formEmailError: string;

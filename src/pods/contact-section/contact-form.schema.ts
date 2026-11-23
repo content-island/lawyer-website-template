@@ -77,6 +77,32 @@ export const createContactFormSchema = (subjects: string[], messages: ContactFor
 
 export type ContactFormData = z.output<ReturnType<typeof createContactFormSchema>>;
 
+/** Summary under the button when the form is invalid, translated (UiText in Content Island) */
+export interface ContactFormSummaryMessages {
+  /** Some field and the privacy checkbox fail */
+  fieldsAndConsent: string;
+  /** Only fields fail: it doesn't mention the checkbox */
+  fields: string;
+  /** Only the privacy checkbox fails */
+  consent: string;
+}
+
+/** Picks the summary so it only mentions the privacy checkbox when the checkbox is failing */
+export const summaryErrorMessage = (
+  errors: Partial<Record<ContactFormField, string>>,
+  messages: ContactFormSummaryMessages
+): string => {
+  const consentFails = Boolean(errors.consent);
+  const fieldsFail = CONTACT_FORM_FIELDS.some(field => field !== 'consent' && Boolean(errors[field]));
+  if (consentFails && !fieldsFail) {
+    return messages.consent;
+  }
+  if (fieldsFail && !consentFails) {
+    return messages.fields;
+  }
+  return messages.fieldsAndConsent;
+};
+
 /** First error message of each invalid field */
 export const firstErrorPerField = (error: z.ZodError): Partial<Record<ContactFormField, string>> => {
   const errors: Partial<Record<ContactFormField, string>> = {};

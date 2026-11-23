@@ -17,6 +17,7 @@ const mapMessages = (ui: UiText): ContactFormMessages => ({
     consent: ui.formConsentError,
   },
   error: ui.formErrorMessage,
+  fieldsError: ui.formFieldsErrorMessage || ui.formErrorMessage,
   success: ui.formSuccessMessage,
   providerMissing: ui.formProviderMissingMessage,
 });

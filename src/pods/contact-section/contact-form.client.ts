@@ -1,5 +1,11 @@
 /** Browser side of the contact form: Zod validation, field errors and sending through the provider */
-import { CONTACT_FORM_FIELDS, createContactFormSchema, firstErrorPerField, type ContactFormField } from './contact-form.schema';
+import {
+  CONTACT_FORM_FIELDS,
+  createContactFormSchema,
+  firstErrorPerField,
+  summaryErrorMessage,
+  type ContactFormField,
+} from './contact-form.schema';
 import type { ContactFormMessages } from './contact-section.model';
 import { sendContactForm } from './contact-form.provider';
 
@@ -52,7 +58,14 @@ export const setupContactForm = (form: HTMLFormElement) => {
     if (!result.success) {
       const errors = firstErrorPerField(result.error);
       CONTACT_FORM_FIELDS.forEach(field => showFieldError(field, errors[field]));
-      showStatus('err', messages.error);
+      showStatus(
+        'err',
+        summaryErrorMessage(errors, {
+          fieldsAndConsent: messages.error,
+          fields: messages.fieldsError,
+          consent: messages.errors.consent,
+        })
+      );
       fieldInput(CONTACT_FORM_FIELDS.find(field => errors[field])!)?.focus();
       return;
     }
